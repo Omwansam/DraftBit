@@ -8,11 +8,16 @@ import PageHero from '../components/ui/PageHero'
 import Seo from '../components/ui/Seo'
 import AnimatedCounter from '../components/ui/AnimatedCounter'
 
+/**
+ * Dated from the real founding year, 2022. The previous version opened in 2019
+ * and claimed expansion into "Europe, Americas, and the Middle East" — neither
+ * was true, and the 2019 date contradicted the four years of building stated
+ * everywhere else.
+ */
 const timeline = [
-  { year: '2019', title: 'Founded', description: 'DraftBit started in Nairobi with a focus on web and mobile product development.' },
-  { year: '2021', title: 'First scale-up', description: 'Shipped products for startups and mid-size companies across East Africa.' },
-  { year: '2023', title: 'Global reach', description: 'Expanded to serve clients in Europe, Americas, and the Middle East.' },
-  { year: '2025', title: 'Today', description: 'A bold tech studio building world-class products from Africa to the world.' },
+  { year: '2022', title: 'Founded', description: 'DraftBit started in Nairobi, building web and mobile products end to end.' },
+  { year: '2024', title: 'Full-stack delivery', description: 'Took products from first commit through to production infrastructure, not just the code.' },
+  { year: '2026', title: 'Shipping in production', description: 'FIBI and ShoeLocker live, both built and deployed end to end from Nairobi.' },
 ]
 
 const About = () => {

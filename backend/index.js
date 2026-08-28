@@ -11,6 +11,32 @@ const { globalLimiter } = require('./middleware/rate-limit.middleware');
 
 const app = express();
 
+/**
+ * Trust the reverse proxies in front of us.
+ *
+ * Without this, req.ip is the proxy's address on every request, so all the
+ * rate limiters in middleware/rate-limit.middleware.js key on one value and the
+ * first person to fail a login locks out everyone behind it. Express also
+ * refuses to read X-Forwarded-Proto, so secure cookies would never be set.
+ *
+ * The value is a hop count, not a boolean: set it to the number of proxies that
+ * actually append to X-Forwarded-For, counting outward from this process.
+ *   1  the edge nginx alone
+ *   2  Cloudflare in front of the edge nginx
+ * `true` is deliberately not used - it trusts the whole chain, and an attacker
+ * can then forge X-Forwarded-For and become any IP the limiters see.
+ */
+const trustProxy = Number.parseInt(config.TRUST_PROXY ?? '', 10);
+if (Number.isInteger(trustProxy) && trustProxy > 0) {
+    app.set('trust proxy', trustProxy);
+} else if (config.NODE_ENV === 'production') {
+    console.warn(
+        '[startup] TRUST_PROXY is not set. Behind a reverse proxy every request ' +
+        'will appear to come from the proxy, which makes the rate limiters ' +
+        'useless. Set it to the number of proxy hops.',
+    );
+}
+
 //connect to the database
 connectDB();
 

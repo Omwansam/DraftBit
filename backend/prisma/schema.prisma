@@ -332,6 +332,10 @@ model SiteSetting {
   mission String @default("")
   vision  String @default("")
 
+  /// Drives the derived "years building" figure on the public site, so the
+  /// number stays true without anyone remembering to increment it.
+  foundedYear Int @default(2022)
+
   social        Json @default("{}")
   stats         Json @default("[]")
   businessHours Json @default("[]")

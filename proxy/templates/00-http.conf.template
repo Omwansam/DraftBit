@@ -1,0 +1,24 @@
+# ---------------------------------------------------------------------------
+# Port 80.
+#
+# Two jobs: answer the ACME challenge, and send everything else to HTTPS.
+#
+# The challenge location stays reachable over plain HTTP forever, not just
+# during the first issue — Let's Encrypt re-validates on every renewal, and a
+# blanket redirect to HTTPS breaks that the moment a certificate lapses, which
+# is exactly when you cannot afford it to.
+# ---------------------------------------------------------------------------
+server {
+    listen      80;
+    listen      [::]:80;
+    server_name ${DOMAIN} www.${DOMAIN} ${PORTAL_DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+        default_type "text/plain";
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}

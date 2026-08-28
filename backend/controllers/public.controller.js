@@ -21,6 +21,40 @@ const HIDDEN = new Set(['status', 'views', 'order', 'applicants', 'createdAt', '
 
 const strip = (row) => Object.fromEntries(Object.entries(row).filter(([key]) => !HIDDEN.has(key)));
 
+/**
+ * The headline figures, counted from what is actually published.
+ *
+ * These used to be hard-coded claims - "50+ Projects Delivered", "30+ Global
+ * Clients", "12+ Countries Served" - none of which were true, and none of which
+ * had anything keeping them honest as the real work changed. Counting them from
+ * the database means the number on the page is the number in the system: it can
+ * only go up by someone actually publishing a project.
+ *
+ * `settings.stats` still wins when it is non-empty, for a figure that is true
+ * but not countable. Left empty by the seed on purpose.
+ */
+async function buildStats(settings) {
+    if (Array.isArray(settings.stats) && settings.stats.length) return settings.stats;
+
+    const projects = await prisma.project.findMany({
+        where: { status: 'published' },
+        select: { liveUrl: true, tags: true, category: true },
+    });
+
+    const years = Math.max(1, new Date().getFullYear() - (settings.foundedYear ?? 2022));
+    const live = projects.filter((project) => project.liveUrl).length;
+    const technologies = new Set(projects.flatMap((project) => project.tags)).size;
+
+    // Only figures with something behind them are shown. A stat that would read
+    // "0" is dropped rather than displayed as an achievement.
+    return [
+        { label: 'Years Building', value: years, suffix: '+' },
+        { label: 'Projects Delivered', value: projects.length, suffix: '' },
+        { label: 'Live in Production', value: live, suffix: '' },
+        { label: 'Technologies Shipped', value: technologies, suffix: '' },
+    ].filter((stat) => stat.value > 0);
+}
+
 const contactSchema = {
     name: line(120, { required: true, min: 1, message: 'Please tell us your name.' }),
     email: email({ required: true, lower: true }),
@@ -54,7 +88,7 @@ const site = asyncHandler(async (_req, res) => {
         ),
     ]);
 
-    const payload = { settings };
+    const payload = { settings: { ...settings, stats: await buildStats(settings) } };
     names.forEach((name, i) => {
         payload[name] = collections[i].map(strip);
     });
@@ -131,15 +165,17 @@ const track = asyncHandler(async (req, res) => {
     // The row's existence is what makes this a new visitor. Letting the unique
     // constraint decide is race-free; a read-then-write would double-count two
     // tabs opened at once.
-    let firstToday = true;
-    try {
-        await prisma.visitorDay.create({ data: { date, visitorKey: visitorId } });
-    } catch (err) {
-        if (err?.code !== 'P2002') throw err;
-        firstToday = false;
-    }
+    //
+    // createMany + skipDuplicates rather than create-and-catch: the collision is
+    // the *expected* path on every page view after a visitor's first, and
+    // catching a thrown P2002 still logs it at error level, which buries real
+    // failures in noise. A count of 0 says "already seen today" without raising.
+    const { count } = await prisma.visitorDay.createMany({
+        data: [{ date, visitorKey: visitorId }],
+        skipDuplicates: true,
+    });
 
-    if (firstToday) {
+    if (count === 1) {
         await bumpDaily('visitors');
         const source = classifyReferrer(referrer, req.hostname);
         await prisma.trafficSource.upsert({

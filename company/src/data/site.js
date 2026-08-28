@@ -60,17 +60,35 @@ export const passions = [
   { icon: Zap, title: 'Digital Transformation', description: 'Modernizing legacy systems and unlocking new business models.' },
 ]
 
+/**
+ * The offline fallback for the headline figures.
+ *
+ * These mirror what the API derives by counting published work (see
+ * buildStats in backend/controllers/public.controller.js). They replace an
+ * earlier set — "50+ Projects Delivered", "30+ Global Clients", "12+ Countries
+ * Served" — that was simply not true, and that nothing kept honest as the real
+ * work changed.
+ *
+ * Keep these in step with what is actually shipped, or leave them: the live
+ * site prefers the counted version whenever the API is reachable.
+ */
 export const stats = [
-  { value: 50, suffix: '+', label: 'Projects Delivered' },
-  { value: 30, suffix: '+', label: 'Global Clients' },
-  { value: 5, suffix: '+', label: 'Years Building' },
-  { value: 12, suffix: '+', label: 'Countries Served' },
+  { value: 4, suffix: '+', label: 'Years Building' },
+  { value: 2, suffix: '', label: 'Projects Delivered' },
+  { value: 2, suffix: '', label: 'Live in Production' },
 ]
 
-export const clients = [
-  'Safaricom', 'Flutterwave', 'Andela', 'M-Kopa', 'Twiga Foods',
-  'Cellulant', 'Sendy', 'Lori Systems', 'Copia', 'Tala',
-]
+/**
+ * Empty until a real client agrees to be named.
+ *
+ * This previously listed Safaricom, Flutterwave, Andela, M-Kopa, Twiga Foods,
+ * Cellulant, Sendy, Lori Systems, Copia and Tala. They are real companies and
+ * none of them are DraftBit clients.
+ *
+ * The homepage marquee falls back to what DraftBit builds while this is empty,
+ * so there is no pressure to fill it with anything that is not true.
+ */
+export const clients = []
 
 export const allProjects = [
   {
@@ -362,11 +380,16 @@ export const values = [
   { title: 'Innovation', description: 'We stay current with tools and practices that deliver results. Your product benefits from what we learn.', icon: Lightbulb },
 ]
 
+/**
+ * Dated from the real founding year, 2022. The previous version opened in 2019
+ * and closed on "serving clients across 12+ countries", neither of which was
+ * true — and the 2019 date contradicted the four years of building claimed
+ * everywhere else on the site.
+ */
 export const timeline = [
-  { year: '2019', title: 'Founded', description: 'DraftBit started in Nairobi with a focus on web and mobile product development.' },
-  { year: '2021', title: 'First Scale-Up', description: 'Shipped products for startups and mid-size companies across East Africa.' },
-  { year: '2023', title: 'Design & Systems', description: 'Added design systems, ERP solutions, and enterprise clients to our portfolio.' },
-  { year: '2025', title: 'Global Reach', description: 'Serving clients across 12+ countries with a team of engineers, designers, and strategists.' },
+  { year: '2022', title: 'Founded', description: 'DraftBit started in Nairobi, building web and mobile products end to end.' },
+  { year: '2024', title: 'Full-Stack Delivery', description: 'Took products from first commit through to production infrastructure, not just the code.' },
+  { year: '2026', title: 'Shipping in Production', description: 'FIBI and ShoeLocker live, both built and deployed end to end from Nairobi.' },
 ]
 
 export const pageMeta = {

@@ -1,11 +1,20 @@
-# DraftBit — full stack: Postgres, the API, and the two Vite frontends.
+# DraftBit — full stack behind one nginx edge.
 #
-#   cp .env.example .env     # then fill in POSTGRES_PASSWORD and JWT_SECRET
+#   cp .env.example .env      # fill in POSTGRES_PASSWORD, JWT_SECRET, DOMAIN
 #   docker compose up -d --build
+#   ./proxy/init-letsencrypt.sh   # once, to obtain the TLS certificate
 #
-# The two frontends are separate origins but reach the API through their own
-# nginx (see each nginx.conf), so browser traffic is always same-origin and the
-# API's single-FRONTEND_URL CORS allow-list never has to cover both of them.
+# Routing, all through the `proxy` service, which is the only thing that
+# publishes a host port:
+#
+#   draftbitlabs.tech          -> company   (public marketing site)
+#   www.draftbitlabs.tech      -> 301 to the apex
+#   portal.draftbitlabs.tech   -> admin     (staff console)
+#   */api/ and */uploads/      -> backend
+#
+# Both sites reach the API on their own origin, so browser traffic is always
+# same-origin: no preflight, no CORS allow-list spanning two domains, and
+# session cookies ride along without SameSite exemptions.
 
 name: draftbit
 
@@ -19,9 +28,24 @@ x-backend-env: &backend-env
   JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
   # index.js throws on boot if this is unset while NODE_ENV=production, by
   # design: without it CORS cannot be pinned to this site.
-  FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
-  # One proxy hop — each frontend's nginx. Consumed by config/env.js.
-  TRUST_PROXY: "1"
+  FRONTEND_URL: ${FRONTEND_URL:-https://${DOMAIN:-localhost}}
+  # Invite links are built against this, so it must be the console's own origin.
+  ADMIN_URL: ${ADMIN_URL:-https://${PORTAL_DOMAIN:-portal.${DOMAIN:-localhost}}}
+  SITE_URL: ${SITE_URL:-https://${DOMAIN:-localhost}}
+  # Proxy hops that append to X-Forwarded-For, counting outward from the API.
+  #   1  the edge nginx alone (this compose file)
+  #   2  Cloudflare in front of it
+  # Overstating it lets a client forge X-Forwarded-For and defeat the rate
+  # limiters; understating it makes every request look like it came from nginx.
+  TRUST_PROXY: ${TRUST_PROXY:-1}
+
+  # Read only by `npm run seed`, never by the running API. Without these the
+  # seed falls back to a password published in this repository, which on a
+  # public VPS is the same as having no password at all.
+  SEED_OWNER_EMAIL: ${SEED_OWNER_EMAIL:-owner@draftbitlabs.tech}
+  SEED_OWNER_PASSWORD: ${SEED_OWNER_PASSWORD:-}
+  SEED_OWNER_NAME: ${SEED_OWNER_NAME:-DraftBit Owner}
+  SEED_STAFF_PASSWORD: ${SEED_STAFF_PASSWORD:-}
 
 services:
   db:
@@ -33,12 +57,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-draftbitlabs}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      # 5434 on the host: 5432 is the usual system Postgres and 5433 is already
-      # taken by the local dev instance this project was pointed at, so both
-      # would collide. The API is unaffected either way — inside the compose
-      # network it always dials db:5432.
-      - "${DB_PORT:-5434}:5432"
+    # Not published. On a public IP an exposed Postgres is found by scanners
+    # within hours, and nothing outside this network needs it — the API dials
+    # db:5432 internally either way.
+    #
+    # For psql or Prisma Studio against a live database, tunnel instead:
+    #   ssh -L 5434:localhost:5434 user@host   (with the block below uncommented)
+    # ports:
+    #   - "${DB_PORT:-5434}:5432"
     healthcheck:
       # Named user and database explicitly: bare pg_isready reports the server
       # as up while it is still replaying WAL and refusing this database.
@@ -77,8 +103,15 @@ services:
       # Uploaded images must outlive the container; index.js serves them back
       # from /uploads and the upload middleware writes them here.
       - uploads:/app/uploads
-    ports:
-      - "${BACKEND_PORT:-5000}:5000"
+    # No host port. The API is reachable only through the proxy, on both
+    # domains, at /api/. Publishing 5000 would expose it on a bare IP with no
+    # TLS, bypassing every security header the edge sets — and the rate limiters
+    # would see the real client while the proxied path sees a forwarded one.
+    # Uncomment for local debugging only.
+    # ports:
+    #   - "${BACKEND_PORT:-5000}:5000"
+    expose:
+      - "5000"
     depends_on:
       db:
         condition: service_healthy
@@ -94,12 +127,12 @@ services:
         # proxies to the API. An absolute http://localhost:5000 would work in
         # development and break behind any real domain.
         VITE_API_URL: ${SITE_API_URL-/api/v1}
-        VITE_SITE_URL: ${SITE_URL:-http://localhost:8080}
+        VITE_SITE_URL: ${SITE_URL:-https://${DOMAIN:-localhost}}
         VITE_FORMSPREE_ENDPOINT: ${VITE_FORMSPREE_ENDPOINT-}
     image: draftbit-company:latest
     restart: unless-stopped
-    ports:
-      - "${SITE_PORT:-8080}:80"
+    expose:
+      - "80"
     depends_on:
       - backend
     networks: [draftbit]
@@ -112,18 +145,76 @@ services:
         # proxies to the API. Set ADMIN_API_URL= (empty) to fall back to demo
         # mode off seeded localStorage data.
         VITE_API_URL: ${ADMIN_API_URL-/api/v1}
-        VITE_SITE_URL: ${SITE_URL:-http://localhost:8080}
+        VITE_SITE_URL: ${SITE_URL:-https://${DOMAIN:-localhost}}
     image: draftbit-admin:latest
     restart: unless-stopped
-    ports:
-      - "${ADMIN_PORT:-8081}:80"
+    expose:
+      - "80"
     depends_on:
       - backend
+    networks: [draftbit]
+
+  # --------------------------------------------------------------------------
+  # The edge. Owns 80 and 443, terminates TLS, and routes by hostname.
+  # --------------------------------------------------------------------------
+  proxy:
+    build:
+      context: ./proxy
+    image: draftbit-proxy:latest
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env, e.g. draftbitlabs.tech}
+      PORTAL_DOMAIN: ${PORTAL_DOMAIN:-portal.${DOMAIN}}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Shared with certbot: it writes certificates here, nginx reads them.
+      - certbot-conf:/etc/letsencrypt:ro
+      # The ACME challenge webroot. certbot drops a token file in here and
+      # Let's Encrypt fetches it over plain HTTP on port 80.
+      - certbot-www:/var/www/certbot:ro
+    depends_on:
+      - company
+      - admin
+      - backend
+    # A renewed certificate is only served after a reload. Reloading on a timer
+    # is graceful — in-flight requests finish on the old worker — and is far
+    # simpler than having certbot signal across container boundaries.
+    command: >
+      sh -c "while :; do sleep 6h & wait $${!}; nginx -s reload; done & 
+             nginx -g 'daemon off;'"
+    networks: [draftbit]
+
+  # Renewal. Wakes twice a day, renews anything inside 30 days of expiry, and
+  # exits quietly otherwise — the random sleep keeps every deployment doing this
+  # from hitting Let's Encrypt at the same instant.
+  #
+  # nginx picks up a renewed certificate only on reload, which is why the proxy
+  # reloads itself every 6 hours (see its command).
+  certbot:
+    image: certbot/certbot:latest
+    restart: unless-stopped
+    volumes:
+      - certbot-conf:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    entrypoint: >
+      sh -c "trap exit TERM;
+             while :; do
+               certbot renew --webroot -w /var/www/certbot --quiet;
+               sleep 12h & wait $${!};
+             done"
+    depends_on:
+      - proxy
     networks: [draftbit]
 
 volumes:
   pgdata:
   uploads:
+  # Let's Encrypt account keys, certificates and renewal config. Losing this
+  # means re-issuing, which counts against the rate limit.
+  certbot-conf:
+  certbot-www:
 
 networks:
   draftbit:

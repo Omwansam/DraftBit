@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { apiEnabled, fetchSite } from '../lib/api'
+import { iconFor } from '../lib/icons'
 import * as staticSite from '../data/site'
 
 const SiteDataContext = createContext(null)
@@ -39,6 +40,15 @@ const initials = (name = '') =>
  */
 const MEDIA_FIELDS = ['image', 'avatarUrl', 'logoUrl', 'liveUrl']
 
+/**
+ * Resolve the stored icon name to the component the templates render.
+ *
+ * The static file holds a lucide component in this field; the API holds its
+ * name. Without this the templates render `<BarChart3 />` as an unknown HTML
+ * element, which React warns about and the browser draws as nothing.
+ */
+const withIcon = (row) => (typeof row.icon === 'string' ? { ...row, icon: iconFor(row.icon) } : row)
+
 const cleanMedia = (row) => {
   const out = { ...row }
   for (const field of MEDIA_FIELDS) {
@@ -51,7 +61,7 @@ const cleanMedia = (row) => {
 function adapt(payload) {
   if (!payload) return {}
 
-  const projects = (payload.projects ?? []).map(cleanMedia)
+  const projects = (payload.projects ?? []).map(cleanMedia).map(withIcon)
   const insights = (payload.insights ?? []).map(cleanMedia)
   const careers = payload.careers ?? []
   const settings = payload.settings ?? {}
@@ -102,7 +112,7 @@ function adapt(payload) {
   // a list of names rather than of records.
   if (payload.clients) merged.clients = payload.clients.map((client) => client.name)
 
-  if (payload.services) merged.services = payload.services
+  if (payload.services) merged.services = payload.services.map(withIcon)
 
   /* Settings are merged field by field rather than wholesale: a blank column on
      a fresh database must not wipe the shipped contact details. */
