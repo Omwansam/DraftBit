@@ -1,8 +1,10 @@
 import React from 'react'
-import { clients } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 import { EditorialHeadline } from '../ui/SectionHeader'
 
 const ClientsSection = () => {
+  const { clients } = useSiteData()
+
   const doubled = [...clients, ...clients]
 
   return (

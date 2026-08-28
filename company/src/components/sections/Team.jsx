@@ -2,10 +2,13 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Linkedin } from 'lucide-react'
-import { team } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 import { EditorialLabel, EditorialHeadline } from '../ui/SectionHeader'
 
-const TeamSection = () => (
+const TeamSection = () => {
+  const { team } = useSiteData()
+
+  return (
   <section id="team" className="py-24 md:py-32 bg-background border-t border-white/5">
     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
       <EditorialLabel>The Team</EditorialLabel>
@@ -54,5 +57,6 @@ const TeamSection = () => (
     </div>
   </section>
 )
+}
 
 export default TeamSection

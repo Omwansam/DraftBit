@@ -1,50 +1,26 @@
-const express = require("express");
+const express = require('express');
+const protect = require('../middleware/protect.middleware');
 const {
-    registerUser,
-    registerAdmin,
-    loginUser,
-    logoutUser,
-    getMe,
-    forgotPassword,
-    verifyResetToken,
-    resetPassword,
-} = require("../controllers/auth.controller");
-const protect = require("../middleware/protect.middleware");
-const authorize = require("../middleware/authorize.middleware");
+    login, refresh, logout, me, checkInvite, acceptInvite, changePassword,
+} = require('../controllers/auth.controller');
 const {
-    loginLimiter,
-    loginIpLimiter,
-    registerLimiter,
-    registerAttemptLimiter,
-    forgotPasswordLimiter,
-    forgotPasswordIpLimiter,
-    resetPasswordLimiter,
-} = require("../middleware/rate-limit.middleware");
+    loginLimiter, loginIpLimiter, resetPasswordLimiter,
+} = require('../middleware/rate-limit.middleware');
 
 const authRouter = express.Router();
 
-authRouter.post("/register", registerAttemptLimiter, registerLimiter, registerUser);
-
-authRouter.post(
-    "/admin/register",
-    protect,
-    authorize("admin"),
-    registerAdmin
-);
-
 // Two limiters per endpoint: the narrow one stops guessing at a single account,
 // the wide one stops one host spraying attempts across many accounts.
-authRouter.post("/login", loginIpLimiter, loginLimiter, loginUser);
-authRouter.post("/logout", logoutUser);
-authRouter.get("/me", protect, getMe);
+authRouter.post('/login', loginIpLimiter, loginLimiter, login);
+authRouter.post('/refresh', refresh);
+authRouter.post('/logout', logout);
+authRouter.get('/me', protect, me);
 
-authRouter.post(
-    "/forgot-password",
-    forgotPasswordIpLimiter,
-    forgotPasswordLimiter,
-    forgotPassword
-);
-authRouter.get("/reset-password", resetPasswordLimiter, verifyResetToken);
-authRouter.post("/reset-password", resetPasswordLimiter, resetPassword);
+// Invite hand-off. Rate limited because the token is the only secret guarding
+// an account that does not have a password yet.
+authRouter.get('/invite', resetPasswordLimiter, checkInvite);
+authRouter.post('/invite/accept', resetPasswordLimiter, acceptInvite);
+
+authRouter.post('/change-password', protect, changePassword);
 
 module.exports = authRouter;

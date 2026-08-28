@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MessageCircle, X, Mail, Phone } from 'lucide-react'
-import { siteConfig } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 
 const ChatWidget = () => {
+  const { siteConfig } = useSiteData()
+
   const [open, setOpen] = useState(false)
 
   return (

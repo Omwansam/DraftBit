@@ -96,8 +96,9 @@ app.get('/health', (_req, res) => {
 
 
 
-// Mount routers here as they are added, e.g.
-//   app.use('/api/v1/auth', require('./routes/auth.routes'));
+// Every route lives under /api/v1 - see routes/index.js, which owns the prefix.
+const { apiRouter, routeNames } = require('./routes');
+app.use('/api/v1', apiRouter);
 
 // Anything that matched no router above is a 404, answered in the same
 // { success, error } shape as every other failure so clients have one contract.
@@ -115,7 +116,13 @@ app.use(errorHandler);
 
 // Start the server
 const server = app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`\nDraftBit API listening on http://localhost:${port}`);
+    console.log(`Environment: ${config.NODE_ENV || 'development'}\n`);
+    console.log('Mounted routes:');
+    for (const name of routeNames) {
+        console.log(`  /api/v1/${name}`);
+    }
+    console.log('');
 });
 // `docker compose up -d --build` sends SIGTERM and waits 10s before SIGKILL.
 // Draining in-flight requests and closing the Prisma pool here avoids dropped

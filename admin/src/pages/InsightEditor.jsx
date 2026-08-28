@@ -29,7 +29,20 @@ export default function InsightEditor() {
   const { toast } = useToast()
 
   const isNew = id === 'new'
-  const existing = useMemo(() => insights.find((p) => p.id === id), [insights, id])
+  /* Match the saved id or the optimistic one the URL still carries: a newly
+     created record is navigated to before the server has assigned its id. */
+  const existing = useMemo(
+    () => insights.find((p) => p.id === id || p.tempId === id),
+    [insights, id],
+  )
+
+  /* Once the real id lands, put it in the URL so a refresh or a shared link
+     resolves. */
+  useEffect(() => {
+    if (existing && existing.id !== id && existing.tempId === id) {
+      navigate(`/insights/${existing.id}`, { replace: true })
+    }
+  }, [existing, id, navigate])
 
   const BLANK = useMemo(
     () => ({

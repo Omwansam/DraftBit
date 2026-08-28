@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
-import { blogPosts } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 import { EditorialLabel, EditorialHeadline } from '../ui/SectionHeader'
 
-const InsightsSection = () => (
+const InsightsSection = () => {
+  const { blogPosts } = useSiteData()
+
+  return (
   <section id="insights" className="py-24 md:py-32 bg-background border-t border-white/5">
     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
@@ -56,5 +59,6 @@ const InsightsSection = () => (
     </div>
   </section>
 )
+}
 
 export default InsightsSection

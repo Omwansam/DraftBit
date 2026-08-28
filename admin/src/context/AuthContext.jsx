@@ -1,5 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { api, apiEnabled, clearToken, endpoints, getToken, setToken } from '../lib/api'
+import {
+  api, apiEnabled, clearToken, endpoints, getToken, setToken, subscribeSessionLost,
+} from '../lib/api'
 import { users as seedUsers } from '../data/seed'
 
 const AuthContext = createContext(null)
@@ -7,11 +9,11 @@ const SESSION_KEY = 'draftbit-admin-session'
 
 /* Demo credentials, used only when no VITE_API_URL is configured. They exist so
    the console is explorable out of the box; with a backend wired up this branch
-   is never reached and the Flask JWT is the only way in. */
+   is never reached and the API is the only way in. */
 const DEMO_PASSWORD = 'draftbit'
 
-/** Capability matrix. The UI hides what a role cannot do; a real backend must
-    enforce the same rules server-side — this is presentation, not security. */
+/** Capability matrix. This mirrors backend/utils/permissions.util.js, which is
+    the copy that actually decides — this one only hides what a role cannot do. */
 const PERMISSIONS = {
   Owner: ['read', 'write', 'publish', 'delete', 'manage_users', 'manage_settings'],
   Admin: ['read', 'write', 'publish', 'delete', 'manage_users', 'manage_settings'],
@@ -30,12 +32,20 @@ export const AuthProvider = ({ children }) => {
 
     async function restore() {
       if (apiEnabled) {
-        if (!getToken()) {
-          setStatus('anonymous')
-          return
-        }
         try {
-          const me = await api.get(endpoints.me)
+          /* With no access token there may still be a live refresh cookie —
+             the usual case after a browser restart — so try to refresh before
+             concluding the visitor is signed out. */
+          if (!getToken()) {
+            const refreshed = await api.post(endpoints.refresh)
+            setToken(refreshed.token)
+            if (cancelled) return
+            setUser(refreshed.user)
+            setStatus('authenticated')
+            return
+          }
+
+          const { user: me } = await api.get(endpoints.me)
           if (cancelled) return
           setUser(me)
           setStatus('authenticated')
@@ -64,17 +74,27 @@ export const AuthProvider = ({ children }) => {
     return () => { cancelled = true }
   }, [])
 
+  /* A refresh that fails anywhere in the app ends the session here, once,
+     rather than each screen discovering it separately. */
+  useEffect(() => subscribeSessionLost(() => {
+    setUser(null)
+    setStatus('anonymous')
+  }), [])
+
   const login = useCallback(async ({ email, password, remember = true }) => {
     setError(null)
 
     if (apiEnabled) {
-      const res = await api.post(endpoints.login, { email, password })
-      if (!res?.access_token) throw new Error('Malformed login response')
-      setToken(res.access_token)
-      const me = res.user ?? (await api.get(endpoints.me))
-      setUser(me)
-      setStatus('authenticated')
-      return me
+      try {
+        const res = await api.post(endpoints.login, { email, password })
+        setToken(res.token)
+        setUser(res.user)
+        setStatus('authenticated')
+        return res.user
+      } catch (err) {
+        setError(err.message)
+        throw err
+      }
     }
 
     // Demo mode.
@@ -100,11 +120,29 @@ export const AuthProvider = ({ children }) => {
     return session
   }, [])
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    // Revokes the refresh token server-side; a failure here must still sign the
+    // user out locally, or a network blip would trap them in the console.
+    if (apiEnabled) await api.post(endpoints.logout).catch(() => {})
+
     clearToken()
     localStorage.removeItem(SESSION_KEY)
     setUser(null)
     setStatus('anonymous')
+  }, [])
+
+  const changePassword = useCallback(async ({ currentPassword, newPassword }) => {
+    const res = await api.post(endpoints.changePassword, { currentPassword, newPassword })
+    // Changing a password revokes every session including this one, so the API
+    // hands back a fresh pair to keep the current tab signed in.
+    setToken(res.token)
+    setUser(res.user)
+    return res.user
+  }, [])
+
+  /** Reflects a profile edit made elsewhere without a round trip to /auth/me. */
+  const patchUser = useCallback((patch) => {
+    setUser((current) => (current ? { ...current, ...patch } : current))
   }, [])
 
   const can = useCallback(
@@ -125,9 +163,11 @@ export const AuthProvider = ({ children }) => {
       demoPassword: DEMO_PASSWORD,
       login,
       logout,
+      changePassword,
+      patchUser,
       can,
     }),
-    [user, status, error, login, logout, can],
+    [user, status, error, login, logout, changePassword, patchUser, can],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

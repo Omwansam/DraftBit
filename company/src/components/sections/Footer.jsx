@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUp } from 'lucide-react'
 import Logo from '../ui/Logo'
-import { siteConfig, socialLinks } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 
 const footerLinks = {
   explore: [
@@ -21,6 +21,8 @@ const footerLinks = {
 }
 
 const Footer = () => {
+  const { siteConfig, socialLinks } = useSiteData()
+
   const year = new Date().getFullYear()
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 

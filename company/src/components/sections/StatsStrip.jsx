@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { stats, siteConfig } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 import AnimatedCounter from './AnimatedCounter'
 
 const LiveClock = () => {
+  const { siteConfig } = useSiteData()
+
   const [time, setTime] = useState('')
 
   useEffect(() => {
@@ -49,7 +51,10 @@ const LiveClock = () => {
   )
 }
 
-const StatsStrip = () => (
+const StatsStrip = () => {
+  const { stats } = useSiteData()
+
+  return (
   <section className="py-12 border-y border-white/5 bg-white/[0.02]">
     <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 mb-10">
@@ -75,5 +80,6 @@ const StatsStrip = () => (
     </div>
   </section>
 )
+}
 
 export default StatsStrip

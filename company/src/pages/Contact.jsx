@@ -3,13 +3,16 @@ import { useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2, Mail, MapPin, Phone, Clock, ChevronDown } from 'lucide-react'
-import { siteConfig, faqs, businessHours, getCareerBySlug } from '../data/site'
+import { faqs } from '../data/site'
+import { useSiteData } from '../context/SiteDataContext'
 import { submitContactForm, getWhatsAppUrl } from '../lib/contact'
 import PageHero from '../components/ui/PageHero'
 import Seo from '../components/ui/Seo'
 import { useToast } from '../components/ui/Toast'
 
 const Contact = () => {
+  const { siteConfig, businessHours, getCareerBySlug } = useSiteData()
+
   const [searchParams] = useSearchParams()
   const roleSlug = searchParams.get('role')
   const applyingRole = roleSlug ? getCareerBySlug(roleSlug) : null

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ArrowRight, FileText, Briefcase, Users, Mail, Home, BookOpen } from 'lucide-react'
-import { allProjects, blogPosts, careers } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 
 const staticPages = [
   { label: 'Home', to: '/', icon: Home, group: 'Pages' },
@@ -15,6 +15,8 @@ const staticPages = [
 ]
 
 const CommandPalette = () => {
+  const { allProjects, blogPosts, careers } = useSiteData()
+
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const navigate = useNavigate()

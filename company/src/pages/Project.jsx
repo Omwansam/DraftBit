@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, Filter } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { allProjects } from '../data/site'
+import { useSiteData } from '../context/SiteDataContext'
 import PageHero from '../components/ui/PageHero'
 
 const categories = ['All', 'Web', 'Mobile', 'Design', 'Dashboard']
 
 const Project = () => {
+  const { allProjects } = useSiteData()
+
   const [activeCategory, setActiveCategory] = useState('All')
 
   const filtered =

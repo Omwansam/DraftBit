@@ -3,12 +3,14 @@ import { useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
-import { siteConfig, socialLinks } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 import { submitContactForm } from '../../lib/contact'
 import { EditorialLabel, EditorialHeadline } from '../ui/SectionHeader'
 import { useToast } from '../ui/Toast'
 
 const ContactSection = () => {
+  const { siteConfig, socialLinks } = useSiteData()
+
   const { addToast } = useToast()
   const {
     register,

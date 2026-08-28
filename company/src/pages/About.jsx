@@ -2,9 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Quote } from 'lucide-react'
-import {
-  siteConfig, mission, vision, whoWeAre, stats, team, techStack, testimonials,
-} from '../data/site'
+import { whoWeAre, techStack } from '../data/site'
+import { useSiteData } from '../context/SiteDataContext'
 import PageHero from '../components/ui/PageHero'
 import Seo from '../components/ui/Seo'
 import AnimatedCounter from '../components/ui/AnimatedCounter'
@@ -16,7 +15,10 @@ const timeline = [
   { year: '2025', title: 'Today', description: 'A bold tech studio building world-class products from Africa to the world.' },
 ]
 
-const About = () => (
+const About = () => {
+  const { siteConfig, mission, vision, stats, team, testimonials } = useSiteData()
+
+  return (
   <div className="min-h-screen bg-background">
     <Seo />
     <PageHero
@@ -105,15 +107,19 @@ const About = () => (
       </div>
     </section>
 
-    <section className="py-16 border-t border-white/5">
-      <div className="max-w-3xl mx-auto px-6 text-center">
-        <Quote className="w-8 h-8 text-primary/40 mx-auto mb-6" />
-        <blockquote className="text-xl font-display text-foreground leading-relaxed mb-6">
-          &ldquo;{testimonials[0].quote}&rdquo;
-        </blockquote>
-        <cite className="text-sm text-muted-foreground not-italic">{testimonials[0].author} — {testimonials[0].role}</cite>
-      </div>
-    </section>
+    {/* Live content can arrive empty, so the pull quote is conditional rather
+        than assuming a first testimonial exists. */}
+    {testimonials.length > 0 && (
+      <section className="py-16 border-t border-white/5">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <Quote className="w-8 h-8 text-primary/40 mx-auto mb-6" />
+          <blockquote className="text-xl font-display text-foreground leading-relaxed mb-6">
+            &ldquo;{testimonials[0].quote}&rdquo;
+          </blockquote>
+          <cite className="text-sm text-muted-foreground not-italic">{testimonials[0].author} — {testimonials[0].role}</cite>
+        </div>
+      </section>
+    )}
 
     <section className="py-20 border-t border-white/5 text-center">
       <h2 className="text-2xl font-display font-bold text-foreground mb-4">Based in {siteConfig.location}</h2>
@@ -125,5 +131,6 @@ const About = () => (
     </section>
   </div>
 )
+}
 
 export default About

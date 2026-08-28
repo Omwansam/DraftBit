@@ -30,7 +30,20 @@ export default function ProjectEditor() {
   const { toast } = useToast()
 
   const isNew = id === 'new'
-  const existing = useMemo(() => projects.find((p) => p.id === id), [projects, id])
+  /* Match the saved id or the optimistic one the URL still carries: a newly
+     created record is navigated to before the server has assigned its id. */
+  const existing = useMemo(
+    () => projects.find((p) => p.id === id || p.tempId === id),
+    [projects, id],
+  )
+
+  /* Once the real id lands, put it in the URL so a refresh or a shared link
+     resolves. */
+  useEffect(() => {
+    if (existing && existing.id !== id && existing.tempId === id) {
+      navigate(`/projects/${existing.id}`, { replace: true })
+    }
+  }, [existing, id, navigate])
 
   const [form, setForm] = useState(() => (isNew ? BLANK : existing ?? BLANK))
   const [errors, setErrors] = useState({})

@@ -1,8 +1,31 @@
+import { apiEnabled, submitEnquiry } from './api'
 import { siteConfig } from '../data/site'
 
 const FORMSPREE_ENDPOINT = import.meta.env.VITE_FORMSPREE_ENDPOINT
 
+/**
+ * Send an enquiry.
+ *
+ * The DraftBit API is preferred, because a message that lands in the database
+ * shows up in the admin console's inbox. Formspree stays as a fallback for a
+ * deployment with no backend, and the dev simulation below keeps the form
+ * usable with neither configured.
+ */
 export async function submitContactForm(data) {
+  if (apiEnabled) {
+    const payload = await submitEnquiry({
+      name: data.name,
+      email: data.email,
+      subject: data.subject || 'Website enquiry',
+      message: data.message,
+      source: data.source || 'Contact form',
+      // Honeypot: the form renders this field out of sight, so a value here
+      // means a bot filled it in.
+      ...(data.website ? { website: data.website } : {}),
+    })
+    return { ok: true, id: payload?.id }
+  }
+
   if (FORMSPREE_ENDPOINT) {
     const res = await fetch(FORMSPREE_ENDPOINT, {
       method: 'POST',

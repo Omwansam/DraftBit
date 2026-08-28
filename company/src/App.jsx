@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
+import { SiteDataProvider } from './context/SiteDataContext'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/sections/Footer'
 import SkipLink from './components/ui/SkipLink'
@@ -10,6 +11,7 @@ import ScrollToHash from './components/ui/ScrollToHash'
 import PageLoader from './components/ui/PageLoader'
 import PageTransition from './components/ui/PageTransition'
 import CookieConsent from './components/ui/CookieConsent'
+import PageViewTracker from './components/ui/PageViewTracker'
 import WhatsAppButton from './components/ui/WhatsAppButton'
 import { ToastProvider } from './components/ui/Toast'
 import Home from './pages/Home'
@@ -49,8 +51,10 @@ const AnimatedRoutes = () => {
 const App = () => {
   return (
     <ThemeProvider>
+      <SiteDataProvider>
       <ToastProvider>
         <Router>
+          <PageViewTracker />
           <SkipLink />
           <ScrollProgress />
           <ScrollToHash />
@@ -67,6 +71,7 @@ const App = () => {
           </div>
         </Router>
       </ToastProvider>
+      </SiteDataProvider>
     </ThemeProvider>
   )
 }

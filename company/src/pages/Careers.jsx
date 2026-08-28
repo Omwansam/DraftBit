@@ -2,10 +2,13 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { MapPin, Clock, ArrowUpRight } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { careers } from '../data/site'
+import { useSiteData } from '../context/SiteDataContext'
 import PageHero from '../components/ui/PageHero'
 
-const Careers = () => (
+const Careers = () => {
+  const { careers } = useSiteData()
+
+  return (
   <div className="min-h-screen bg-background">
     <PageHero
       label="Careers"
@@ -53,5 +56,6 @@ const Careers = () => (
     </section>
   </div>
 )
+}
 
 export default Careers

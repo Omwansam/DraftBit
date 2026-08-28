@@ -2,11 +2,13 @@ import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, ArrowUpRight, CheckCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { getProjectBySlug, allProjects } from '../data/site'
+import { useSiteData } from '../context/SiteDataContext'
 import Seo from '../components/ui/Seo'
 import NotFound from './NotFound'
 
 const CaseStudy = () => {
+  const { getProjectBySlug, allProjects } = useSiteData()
+
   const { slug } = useParams()
   const project = getProjectBySlug(slug)
 

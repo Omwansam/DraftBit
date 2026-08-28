@@ -108,11 +108,10 @@ services:
     build:
       context: ./admin
       args:
-        # Defaults to empty on purpose: with no VITE_API_URL the console runs in
-        # demo mode off seeded localStorage data, which is the only mode that
-        # currently works end to end. Set ADMIN_API_URL=/api/v1 in .env to point
-        # it at the real API once the auth routes are mounted.
-        VITE_API_URL: ${ADMIN_API_URL-}
+        # Relative, so the browser calls this container's own nginx, which
+        # proxies to the API. Set ADMIN_API_URL= (empty) to fall back to demo
+        # mode off seeded localStorage data.
+        VITE_API_URL: ${ADMIN_API_URL-/api/v1}
         VITE_SITE_URL: ${SITE_URL:-http://localhost:8080}
     image: draftbit-admin:latest
     restart: unless-stopped

@@ -1,14 +1,11 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { siteConfig } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 
-const defaultMeta = {
-  title: `${siteConfig.name} | Africa's Bold Tech Studio`,
-  description: siteConfig.description,
-}
-
+/* '/' is filled in from the live site settings inside the component, so a
+   name or description edited in the admin console reaches the tab title and
+   the share cards without a rebuild. */
 const routeMeta = {
-  '/': defaultMeta,
   '/about': { title: 'About | DraftBit', description: 'Meet the team behind DraftBit. Our mission, values, and journey.' },
   '/services': { title: 'Services | DraftBit', description: 'Custom software, websites, ERP, CRM, POS, and automation.' },
   '/projects': { title: 'Projects | DraftBit', description: 'Selected work delivered for clients worldwide.' },
@@ -21,8 +18,14 @@ const routeMeta = {
 
 const PageMeta = () => {
   const { pathname } = useLocation()
+  const { siteConfig } = useSiteData()
 
   useEffect(() => {
+    const defaultMeta = {
+      title: `${siteConfig.name} | Africa's Bold Tech Studio`,
+      description: siteConfig.description,
+    }
+
     const base = pathname.split('/').slice(0, 2).join('/') || '/'
     const meta = routeMeta[base] || routeMeta[pathname] || defaultMeta
 
@@ -36,7 +39,7 @@ const PageMeta = () => {
 
     const ogDesc = document.querySelector('meta[property="og:description"]')
     if (ogDesc) ogDesc.setAttribute('content', meta.description)
-  }, [pathname])
+  }, [pathname, siteConfig])
 
   return null
 }

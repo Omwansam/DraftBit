@@ -2,7 +2,7 @@ import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Share2, Twitter, Linkedin, Link2 } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { getBlogPostBySlug, blogPosts } from '../data/site'
+import { useSiteData } from '../context/SiteDataContext'
 import Seo from '../components/ui/Seo'
 import { useToast } from '../components/ui/Toast'
 import NotFound from './NotFound'
@@ -29,6 +29,8 @@ const articleBodies = {
 }
 
 const InsightDetail = () => {
+  const { getBlogPostBySlug, blogPosts } = useSiteData()
+
   const { slug } = useParams()
   const post = getBlogPostBySlug(slug)
   const paragraphs = articleBodies[slug]

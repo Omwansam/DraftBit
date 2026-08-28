@@ -1,21 +1,26 @@
 const express = require('express');
 const protect = require('../middleware/protect.middleware');
-const authorize = require('../middleware/authorize.middleware');
-const { getProfile, updateProfile, changePassword, getAllUsers, deleteUser } = require('../controllers/user.controller');
+const requirePermission = require('../middleware/permission.middleware');
+const {
+    list, getOne, create, resendInvite, update, remove, updateProfile,
+} = require('../controllers/user.controller');
 
 const userRouter = express.Router();
 
-// apply protection to all user routes
 userRouter.use(protect);
 
-// user routes
-userRouter.get('/profile', getProfile);
-userRouter.put('/profile', updateProfile);
-userRouter.put('/change-password', changePassword);
+// Editing your own name or avatar is not user management, so it sits above the
+// manage_users gate - otherwise a Viewer could not change their own display name.
+userRouter.patch('/me', updateProfile);
+userRouter.put('/me', updateProfile);
 
-// admin routes
-userRouter.use(authorize('admin'));
-userRouter.get('/', getAllUsers);
-userRouter.delete('/:id', deleteUser);
+userRouter.get('/', requirePermission('read'), list);
+userRouter.get('/:id', requirePermission('read'), getOne);
+
+userRouter.post('/', requirePermission('manage_users'), create);
+userRouter.post('/:id/resend-invite', requirePermission('manage_users'), resendInvite);
+userRouter.patch('/:id', requirePermission('manage_users'), update);
+userRouter.put('/:id', requirePermission('manage_users'), update);
+userRouter.delete('/:id', requirePermission('manage_users'), remove);
 
 module.exports = userRouter;

@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { whoWeAre, mission, vision } from '../../data/site'
+import { whoWeAre } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 import { EditorialLabel, EditorialHeadline } from '../ui/SectionHeader'
 
 const WhoWeAre = () => {
+  const { mission, vision } = useSiteData()
+
   const [expanded, setExpanded] = useState(false)
   const previewLength = 180
   const needsTruncate = whoWeAre.story.length > previewLength

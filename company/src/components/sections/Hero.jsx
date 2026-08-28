@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
-import { siteConfig } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 
 const lineVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -13,6 +13,8 @@ const lineVariants = {
 }
 
 const Hero = () => {
+  const { siteConfig } = useSiteData()
+
   const lines = [
     <>We are <span className="text-gradient">{siteConfig.name}</span></>,
     <>Africa&apos;s Bold Tech Studio</>,

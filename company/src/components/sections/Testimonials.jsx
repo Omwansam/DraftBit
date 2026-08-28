@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react'
-import { testimonials } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 import { EditorialLabel, EditorialHeadline } from '../ui/SectionHeader'
 
 const TestimonialsSection = () => {
+  const { testimonials } = useSiteData()
+
   const [active, setActive] = useState(0)
   const current = testimonials[active]
   const next = () => setActive((i) => (i + 1) % testimonials.length)

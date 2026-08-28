@@ -2,11 +2,18 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
-import { featuredProjects } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 import { EditorialLabel, EditorialHeadline } from '../ui/SectionHeader'
 
 const ProjectsSection = () => {
+  const { featuredProjects } = useSiteData()
+
   const [featured, ...rest] = featuredProjects
+
+  /* With live content the list can legitimately be empty - a fresh database, or
+     nothing flagged featured yet. The static seed always had entries, which is
+     why this went unnoticed until the section was wired to the API. */
+  if (!featured) return null
 
   return (
     <section id="projects" className="py-24 md:py-32 bg-[hsl(224_71%_3%)] border-t border-white/5">

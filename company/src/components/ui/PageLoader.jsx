@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { siteConfig } from '../../data/site'
+import { useSiteData } from '../../context/SiteDataContext'
 
 const PageLoader = () => {
+  const { siteConfig } = useSiteData()
+
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

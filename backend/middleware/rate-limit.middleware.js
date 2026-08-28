@@ -120,6 +120,30 @@ const oauthLimiter = rateLimit({
 });
 
 /**
+ * Contact form. A human sends one enquiry, thinks, maybe sends a second. A
+ * burst beyond that is a bot filling the inbox, so the budget is deliberately
+ * small and measured per hour rather than per minute.
+ */
+const contactLimiter = rateLimit({
+    ...base,
+    windowMs: 60 * 60 * 1000,
+    limit: 5,
+    message: jsonMessage('Thanks - we already have your message. Give us a little time to reply.'),
+});
+
+/**
+ * Page-view beacons. Generous, because one real visitor legitimately fires one
+ * per navigation, but still bounded so the analytics tables cannot be inflated
+ * by a script left running.
+ */
+const trackLimiter = rateLimit({
+    ...base,
+    windowMs: 60 * 1000,
+    limit: 60,
+    message: jsonMessage('Too many events.'),
+});
+
+/**
  * Whole-API ceiling. Generous enough that normal browsing never notices, low
  * enough to blunt scraping and slow-loris style hammering.
  */
@@ -142,5 +166,7 @@ module.exports = {
     forgotPasswordIpLimiter,
     resetPasswordLimiter,
     oauthLimiter,
+    contactLimiter,
+    trackLimiter,
     globalLimiter,
 };

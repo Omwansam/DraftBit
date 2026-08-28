@@ -37,6 +37,16 @@ const errorHandler = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
 
+    // ApiError is the deliberate-failure type thrown by controllers and the
+    // validator. It already knows its status, so nothing below needs to guess.
+    if (err.name === 'ApiError') {
+        return res.status(err.statusCode).json({
+            success: false,
+            error: err.message,
+            ...(err.details ? { details: err.details } : {}),
+        });
+    }
+
     // Log error details (development only)
     if (config.NODE_ENV === 'development') {
         console.error('Error:', {

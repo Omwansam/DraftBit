@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Save, Trash2, Users } from 'lucide-react'
 import Button from '../components/ui/Button'
@@ -27,7 +27,20 @@ export default function CareerEditor() {
   const { toast } = useToast()
 
   const isNew = id === 'new'
-  const existing = useMemo(() => careers.find((c) => c.id === id), [careers, id])
+  /* Match the saved id or the optimistic one the URL still carries: a newly
+     created record is navigated to before the server has assigned its id. */
+  const existing = useMemo(
+    () => careers.find((c) => c.id === id || c.tempId === id),
+    [careers, id],
+  )
+
+  /* Once the real id lands, put it in the URL so a refresh or a shared link
+     resolves. */
+  useEffect(() => {
+    if (existing && existing.id !== id && existing.tempId === id) {
+      navigate(`/careers/${existing.id}`, { replace: true })
+    }
+  }, [existing, id, navigate])
 
   const [form, setForm] = useState(() => (isNew ? BLANK : existing ?? BLANK))
   const [errors, setErrors] = useState({})
