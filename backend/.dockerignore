@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log*
+
+# Never bake secrets into an image layer — the runtime gets these from compose.
+.env
+.env.*
+!.env.example
+
+# Runtime state; the named volume provides this at run time.
+uploads
+
+.git
+.gitignore
+Dockerfile
+.dockerignore
+README.md
+*.md

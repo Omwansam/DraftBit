@@ -1,0 +1,12 @@
+# Compose reads .env from this directory — on a VPS it holds POSTGRES_PASSWORD
+# and JWT_SECRET, so it must never be committed. The template is .env.example.
+.env
+.env.*
+!.env.example
+
+node_modules/
+dist/
+
+npm-debug.log*
+yarn-error.log*
+.DS_Store

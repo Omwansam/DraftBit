@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log*
+
+# Rebuilt inside the image; copying the committed one in risks shipping a stale
+# bundle that silently wins over the fresh build.
+dist
+
+.env
+.env.*
+!.env.example
+
+.git
+.gitignore
+Dockerfile
+.dockerignore
+*.md

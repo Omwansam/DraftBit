@@ -1,0 +1,131 @@
+# DraftBit — full stack: Postgres, the API, and the two Vite frontends.
+#
+#   cp .env.example .env     # then fill in POSTGRES_PASSWORD and JWT_SECRET
+#   docker compose up -d --build
+#
+# The two frontends are separate origins but reach the API through their own
+# nginx (see each nginx.conf), so browser traffic is always same-origin and the
+# API's single-FRONTEND_URL CORS allow-list never has to cover both of them.
+
+name: draftbit
+
+x-backend-env: &backend-env
+  NODE_ENV: production
+  PORT: "5000"
+  # Compose resolves `db` on the shared network; the published host port is
+  # irrelevant here. Percent-encode the password if it contains @ : / or ?.
+  DATABASE_URL: postgresql://${POSTGRES_USER:-draftbit}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-draftbitlabs}?schema=public
+  JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env — the API refuses to sign tokens without it}
+  JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+  # index.js throws on boot if this is unset while NODE_ENV=production, by
+  # design: without it CORS cannot be pinned to this site.
+  FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
+  # One proxy hop — each frontend's nginx. Consumed by config/env.js.
+  TRUST_PROXY: "1"
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-draftbit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-draftbitlabs}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # 5434 on the host: 5432 is the usual system Postgres and 5433 is already
+      # taken by the local dev instance this project was pointed at, so both
+      # would collide. The API is unaffected either way — inside the compose
+      # network it always dials db:5432.
+      - "${DB_PORT:-5434}:5432"
+    healthcheck:
+      # Named user and database explicitly: bare pg_isready reports the server
+      # as up while it is still replaying WAL and refusing this database.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-draftbit} -d ${POSTGRES_DB:-draftbitlabs}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks: [draftbit]
+
+  # One-shot schema migration. Runs to completion before the API starts, so the
+  # API never serves traffic against a schema that has not been applied.
+  #
+  # Shares the backend's build context and image tag deliberately: the image is
+  # built once and reused here, and migrations are guaranteed to be exactly the
+  # ones that shipped with this build of the code.
+  migrate:
+    build:
+      context: ./backend
+    image: draftbit-backend:latest
+    restart: "no"
+    command: ["npx", "prisma", "migrate", "deploy"]
+    environment: *backend-env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [draftbit]
+
+  backend:
+    build:
+      context: ./backend
+    image: draftbit-backend:latest
+    restart: unless-stopped
+    environment: *backend-env
+    volumes:
+      # Uploaded images must outlive the container; index.js serves them back
+      # from /uploads and the upload middleware writes them here.
+      - uploads:/app/uploads
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks: [draftbit]
+
+  company:
+    build:
+      context: ./company
+      args:
+        # Relative, so the browser calls this container's own nginx, which
+        # proxies to the API. An absolute http://localhost:5000 would work in
+        # development and break behind any real domain.
+        VITE_API_URL: ${SITE_API_URL-/api/v1}
+        VITE_SITE_URL: ${SITE_URL:-http://localhost:8080}
+        VITE_FORMSPREE_ENDPOINT: ${VITE_FORMSPREE_ENDPOINT-}
+    image: draftbit-company:latest
+    restart: unless-stopped
+    ports:
+      - "${SITE_PORT:-8080}:80"
+    depends_on:
+      - backend
+    networks: [draftbit]
+
+  admin:
+    build:
+      context: ./admin
+      args:
+        # Defaults to empty on purpose: with no VITE_API_URL the console runs in
+        # demo mode off seeded localStorage data, which is the only mode that
+        # currently works end to end. Set ADMIN_API_URL=/api/v1 in .env to point
+        # it at the real API once the auth routes are mounted.
+        VITE_API_URL: ${ADMIN_API_URL-}
+        VITE_SITE_URL: ${SITE_URL:-http://localhost:8080}
+    image: draftbit-admin:latest
+    restart: unless-stopped
+    ports:
+      - "${ADMIN_PORT:-8081}:80"
+    depends_on:
+      - backend
+    networks: [draftbit]
+
+volumes:
+  pgdata:
+  uploads:
+
+networks:
+  draftbit:
+    driver: bridge
