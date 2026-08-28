@@ -1,0 +1,417 @@
+// DraftBit API — data model.
+//
+// Shapes here mirror the records the admin console already renders
+// (admin/src/data/seed.js), so a DB-backed console looks identical to the
+// demo-mode one. Enum *values* are spelled exactly as the UI spells them
+// ("Owner", "published", "in_progress" → serialised to "in-progress"), which
+// keeps the serialisers trivial and the payloads readable.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/* -------------------------------------------------------------------------- */
+/* Enums                                                                       */
+/* -------------------------------------------------------------------------- */
+
+enum Role {
+  Owner
+  Admin
+  Editor
+  Viewer
+}
+
+enum UserStatus {
+  active
+  invited
+  suspended
+}
+
+/// Shared by projects, insights and services.
+enum ContentStatus {
+  draft
+  published
+  archived
+}
+
+enum CareerStatus {
+  draft
+  open
+  closed
+}
+
+enum MemberStatus {
+  active
+  inactive
+}
+
+enum TestimonialStatus {
+  pending
+  published
+  rejected
+}
+
+/// `in_progress` is the one value that cannot be spelled as the UI spells it —
+/// a hyphen is not a legal identifier — so serialiseMessage() maps it across.
+enum MessageStatus {
+  new
+  in_progress
+  replied
+  archived
+  spam
+  closed
+}
+
+/* -------------------------------------------------------------------------- */
+/* Accounts                                                                    */
+/* -------------------------------------------------------------------------- */
+
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  name     String
+  email    String @unique
+
+  /// Null until an invited user accepts and sets a password. A null hash can
+  /// never match, so an unaccepted invite cannot be signed into.
+  passwordHash String?
+
+  role      Role       @default(Editor)
+  status    UserStatus @default(invited)
+  avatarUrl String?
+
+  lastActive DateTime?
+
+  inviteTokenHash String?   @unique
+  inviteExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  refreshTokens RefreshToken[]
+  activity      ActivityLog[]
+
+  @@index([role])
+  @@index([status])
+}
+
+/// Rotating refresh tokens. Only the SHA-256 of the token is stored, so a
+/// database leak does not hand over live sessions.
+model RefreshToken {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  /// Set when this token was rotated out, so a replayed token can be detected
+  /// and the whole family revoked.
+  replacedBy String?
+
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/* -------------------------------------------------------------------------- */
+/* Content                                                                     */
+/* -------------------------------------------------------------------------- */
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String   @default("")
+  tags        String[] @default([])
+  icon        String   @default("Globe")
+  category    String   @default("Web")
+
+  status   ContentStatus @default(draft)
+  featured Boolean       @default(false)
+
+  client   String @default("")
+  role     String @default("")
+  year     String @default("")
+  liveUrl  String @default("")
+  image    String @default("")
+  imageAlt String @default("")
+
+  challenge String   @default("")
+  solution  String   @default("")
+  results   String[] @default([])
+
+  views Int @default(0)
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([featured])
+}
+
+model Insight {
+  id      String @id @default(cuid())
+  slug    String @unique
+  title   String
+  excerpt String @default("")
+  body    String @default("")
+
+  category String @default("Engineering")
+  author   String @default("")
+
+  status   ContentStatus @default(draft)
+  featured Boolean       @default(false)
+
+  readTime    String    @default("")
+  publishedAt DateTime?
+
+  image String   @default("")
+  tags  String[] @default([])
+
+  views Int @default(0)
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model Career {
+  id         String @id @default(cuid())
+  slug       String @unique
+  title      String
+  department String @default("Engineering")
+  location   String @default("")
+  type       String @default("Full-time")
+
+  status      CareerStatus @default(draft)
+  description String       @default("")
+
+  requirements String[] @default([])
+  applicants   Int      @default(0)
+  postedAt     DateTime?
+
+  order Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+model TeamMember {
+  id    String @id @default(cuid())
+  name  String
+  role  String @default("")
+  focus String @default("")
+  email String @unique
+
+  linkedin  String @default("")
+  github    String @default("")
+  avatarUrl String @default("")
+
+  status   MemberStatus @default(active)
+  order    Int          @default(0)
+  joinedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, order])
+}
+
+model Testimonial {
+  id      String @id @default(cuid())
+  quote   String
+  author  String
+  role    String @default("")
+  company String @default("")
+  rating  Int    @default(5)
+
+  status TestimonialStatus @default(pending)
+  order  Int               @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  icon        String   @default("Code")
+  title       String
+  description String   @default("")
+  features    String[] @default([])
+
+  status ContentStatus @default(published)
+  order  Int           @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, order])
+}
+
+model Client {
+  id       String @id @default(cuid())
+  name     String
+  industry String @default("")
+  website  String @default("")
+  logoUrl  String @default("")
+
+  featured Boolean @default(false)
+  order    Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([featured, order])
+}
+
+/* -------------------------------------------------------------------------- */
+/* Enquiries                                                                   */
+/* -------------------------------------------------------------------------- */
+
+model Message {
+  id      String @id @default(cuid())
+  name    String
+  email   String
+  subject String @default("")
+  message String
+
+  read    Boolean       @default(false)
+  starred Boolean       @default(false)
+  status  MessageStatus @default(new)
+  source  String        @default("Contact form")
+
+  /// Captured on submission for abuse triage. Never returned to the console.
+  ip        String?
+  userAgent String?
+
+  repliedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status])
+  @@index([read])
+  @@index([createdAt])
+}
+
+/* -------------------------------------------------------------------------- */
+/* Site settings (single row)                                                  */
+/* -------------------------------------------------------------------------- */
+
+/// One row, id "site". Grouped sub-objects the console edits as a unit
+/// (social, seo, features) stay Json — they are read and written whole, and
+/// splitting them into columns would mean a migration per new social link.
+model SiteSetting {
+  id String @id @default("site")
+
+  name        String @default("DraftBit")
+  tagline     String @default("")
+  description String @default("")
+
+  email    String @default("")
+  phone    String @default("")
+  location String @default("")
+  address  String @default("")
+  mapUrl   String @default("")
+
+  mission String @default("")
+  vision  String @default("")
+
+  social        Json @default("{}")
+  stats         Json @default("[]")
+  businessHours Json @default("[]")
+  seo           Json @default("{}")
+  features      Json @default("{}")
+
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+}
+
+/* -------------------------------------------------------------------------- */
+/* Activity feed                                                               */
+/* -------------------------------------------------------------------------- */
+
+model ActivityLog {
+  id String @id @default(cuid())
+
+  /// Denormalised display name, kept so the feed still reads correctly after
+  /// the acting user is deleted (the relation nulls out, the name does not).
+  actor   String
+  actorId String?
+  user    User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  action String
+  target String @default("")
+  type   String @default("edit")
+
+  meta Json?
+  at   DateTime @default(now())
+
+  @@index([at])
+  @@index([actorId])
+}
+
+/* -------------------------------------------------------------------------- */
+/* Analytics                                                                   */
+/* -------------------------------------------------------------------------- */
+
+/// Daily rollup. Written by POST /public/track, read by the dashboard —
+/// aggregating raw hits at read time would mean scanning every event to draw
+/// one 90-day line.
+model DailyTraffic {
+  date      DateTime @id @db.Date
+  visitors  Int      @default(0)
+  pageViews Int      @default(0)
+  enquiries Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+/// One row per (day, visitor). Its existence is what makes a hit count as a
+/// new visitor rather than another page view; the compound key does the
+/// deduplication in the database instead of in application memory.
+model VisitorDay {
+  date       DateTime @db.Date
+  visitorKey String
+  createdAt  DateTime @default(now())
+
+  @@id([date, visitorKey])
+}
+
+model TrafficSource {
+  id       String @id @default(cuid())
+  source   String @unique
+  visitors Int    @default(0)
+
+  updatedAt DateTime @updatedAt
+}
+
+/// avgTime and bounce % are derived at read time from these counters, so both
+/// stay correct as traffic accumulates instead of being snapshots.
+model PageStat {
+  id    String @id @default(cuid())
+  path  String @unique
+  title String @default("")
+
+  views        Int @default(0)
+  totalSeconds Int @default(0)
+  bounces      Int @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@index([views])
+}

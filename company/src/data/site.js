@@ -60,19 +60,6 @@ export const passions = [
   { icon: Zap, title: 'Digital Transformation', description: 'Modernizing legacy systems and unlocking new business models.' },
 ]
 
-export const globalRegions = [
-  {
-    id: 'africa',
-    label: 'Africa',
-    countries: ['Kenya', 'Nigeria', 'South Africa', 'Ghana', 'Rwanda', 'Tanzania', 'Uganda', 'Ethiopia', 'Egypt', 'Morocco', 'Senegal', 'Botswana'],
-  },
-  {
-    id: 'global',
-    label: 'Europe & Americas',
-    countries: ['United Kingdom', 'Germany', 'Netherlands', 'United States', 'Canada', 'UAE', 'Singapore', 'Australia', 'Remote Worldwide'],
-  },
-]
-
 export const stats = [
   { value: 50, suffix: '+', label: 'Projects Delivered' },
   { value: 30, suffix: '+', label: 'Global Clients' },
@@ -86,6 +73,48 @@ export const clients = [
 ]
 
 export const allProjects = [
+  {
+    slug: 'fibi-community',
+    title: 'FIBI',
+    description: 'A fractional land-investment platform for co-owning vetted Kenyan projects—eco-lodges, solar, and agriculture—starting from a low minimum.',
+    tags: ['React 19', 'TypeScript', 'Express', 'Prisma', 'PostgreSQL'],
+    icon: BarChart3,
+    category: 'Web',
+    gradient: 'from-cyan-500/20 to-violet-500/20',
+    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200&auto=format&fit=crop',
+    imageAlt: 'Aerial view of open farmland, representing the land projects FIBI members co-own',
+    featured: true,
+    liveUrl: 'https://fibicommunity.org',
+    client: 'FIBI — For Investors By Investors',
+    role: 'Lead Engineer',
+    year: '2026',
+    challenge: 'Fractional land investment puts three different audiences on one platform: prospective investors evaluating listings, members tracking positions and payouts, and operators reconciling money and approving applications. Each needs its own surface and permissions. Settlement had to cover both card and bank wire across two currencies without the money logic forking into parallel code paths.',
+    solution: 'A full-stack product designed and built end to end: React 19, TypeScript, Vite, Tailwind CSS v4, Radix UI, React Router and Recharts on the front end, with an Express, Prisma and PostgreSQL 16 back end. It is organised as three deliberately distinct interface layers—a marketing site, a signed-in investor portal, and an operator console with a ⌘K command palette—each with its own chrome so users always know which surface they are on. The portal covers portfolio allocation and growth charts, wallet activity, deposits, withdrawals, payout schedules and per-project positions; a tiered membership system (Free through Investor+) handles reviewed applications, invoices, renewals and a gated members hub; the marketplace lists vetted projects with live funding progress, projected ROI, timelines and minimums. Card and bank-wire settlement run through one code path, dual currency (KES/USD), with money stored as integer minor units. Security covers JWT in httpOnly cookies, bcrypt at cost 12, account lockout, per-IP rate limiting, a server-side password policy and MX-checked email validation at signup. It ships fully containerised via Docker Compose—nginx reverse proxy, static front end, API, database and certbot—behind Cloudflare on Full strict TLS with Let\'s Encrypt origin certificates, origin locked to Cloudflare IPs, automated migrations on deploy and scheduled database backups.',
+    results: [
+      'Live in production at fibicommunity.org',
+      'Three distinct surfaces: marketing, investor portal, operator console',
+      'Card and bank-wire settlement through one code path',
+      'Dual currency (KES/USD), money stored as integer minor units',
+      'Responsive and audited from 320px to 2560px',
+      'Automated TLS renewal and scheduled database backups',
+    ],
+  },
+  {
+    slug: 'shoelocker-storefront',
+    title: 'ShoeLocker',
+    description: 'E-commerce storefront deployed as a third tenant on a VPS already running two production applications behind a shared nginx container.',
+    tags: ['React 19', 'Flask', 'PostgreSQL', 'Docker'],
+    icon: ShoppingCart,
+    category: 'Web',
+    gradient: 'from-cyan-500/20 to-transparent',
+    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop',
+    featured: true,
+    client: 'ShoeLocker (danzykicks.com)',
+    year: '2026',
+    challenge: 'The target VPS already served two unrelated production applications behind a single shared nginx container that owned ports 80 and 443. Adding a third site meant working inside that arrangement—without provisioning new infrastructure, and without taking the existing tenants offline.',
+    solution: 'We attached the ShoeLocker stack—React 19 + Vite SPA, Flask REST API on Gunicorn, PostgreSQL 16, containerized end-to-end with Docker Compose behind Cloudflare—to the proxy\'s Docker network under dedicated service aliases and published zero host ports, so the storefront and API are reachable only by the proxy, by name. An isolated vhost for danzykicks.com was added alongside the existing ones, and the site went live on a graceful config reload. Pre-deploy review also caught credentials being baked into the backend image—.dockerignore patterns are anchored at the build-context root, so a rule written for .env never matched the nested file the service actually loaded—and an npm lockfile out of sync with package.json that broke reproducible builds.',
+    results: ['Zero host ports published', 'No downtime on cutover', 'Neither existing application restarted', 'Secrets kept out of image layers'],
+  },
   {
     slug: 'e-commerce-platform',
     title: 'E-Commerce Platform',
