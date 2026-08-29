@@ -86,3 +86,18 @@ export function truncate(text = '', max = 90) {
   if (text.length <= max) return text
   return `${text.slice(0, text.lastIndexOf(' ', max)).trimEnd()}…`
 }
+
+/**
+ * The public site's hostname, for display in console copy.
+ *
+ * Derived from VITE_SITE_URL rather than written out, because the console used
+ * to say "draftbit.com" in three places while the site was actually served from
+ * somewhere else — copy that names a domain goes stale the moment one changes.
+ */
+export const siteHost = (() => {
+  try {
+    return new URL(import.meta.env.VITE_SITE_URL || 'https://draftbitlabs.tech').host
+  } catch {
+    return 'draftbitlabs.tech'
+  }
+})()

@@ -210,7 +210,7 @@ export default function Team() {
               value={form.email}
               error={errors.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="alex@draftbit.com"
+              placeholder="alex@draftbitlabs.tech"
             />
             <Select
               label="Status"

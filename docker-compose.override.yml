@@ -1,0 +1,53 @@
+# Deployment override for a VPS where DraftBit is not the only tenant.
+#
+# This server already runs a FIBI stack in /opt/fibi/FIBI whose nginx container
+# owns ports 80 and 443. Publishing them here would fail to bind — and a partial
+# success would take fibicommunity.org offline. So DraftBit publishes nothing:
+# its containers join the existing proxy's network under explicit aliases, and
+# that proxy gains a vhost per DraftBit domain.
+#
+# Compose loads this file automatically alongside docker-compose.yml. The base
+# file is left describing a standalone deployment, which is what DEPLOYMENT.md
+# documents and what a fresh VPS would use.
+
+services:
+  # Kept out of the default `up` by a profile that is never enabled. The shared
+  # FIBI proxy does this job; a second one would contend for 80/443.
+  proxy:
+    profiles: ["standalone-only"]
+
+  # Same: certificates are issued and renewed by the FIBI certbot, against the
+  # volume its proxy already reads.
+  certbot:
+    profiles: ["standalone-only"]
+
+  # The three services the shared proxy must reach. Each keeps the internal
+  # `draftbit` network (backend -> db) and gains the FIBI one purely so nginx
+  # can resolve it.
+  #
+  # Aliases are prefixed because FIBI already claims `frontend`, `backend` and
+  # `proxy` on that network. An unprefixed alias would resolve to whichever
+  # container answered first, silently routing DraftBit traffic into FIBI.
+  company:
+    networks:
+      draftbit: {}
+      fibi_internal:
+        aliases: [draftbit-company]
+
+  admin:
+    networks:
+      draftbit: {}
+      fibi_internal:
+        aliases: [draftbit-admin]
+
+  backend:
+    networks:
+      draftbit: {}
+      fibi_internal:
+        aliases: [draftbit-backend]
+
+networks:
+  # Created by the FIBI stack. `external` means compose attaches to it and will
+  # never modify or remove it.
+  fibi_internal:
+    external: true

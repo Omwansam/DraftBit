@@ -126,7 +126,7 @@ export default function Login() {
                   className={`h-11 w-full rounded-lg border bg-input pl-10 pr-3 text-sm text-foreground transition-colors placeholder:text-subtle-foreground focus:outline-none focus:ring-2 focus:ring-primary/25 ${
                     errors.email ? 'border-critical' : 'border-border focus:border-primary'
                   }`}
-                  placeholder="you@draftbit.com"
+                  placeholder="you@draftbitlabs.tech"
                   {...register('email', {
                     required: 'Enter your email address',
                     pattern: { value: /^\S+@\S+\.\S+$/, message: 'Enter a valid email address' },

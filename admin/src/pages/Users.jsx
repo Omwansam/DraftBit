@@ -277,7 +277,7 @@ export default function Users() {
             value={invite.email}
             error={errors.email}
             onChange={(e) => setInvite({ ...invite, email: e.target.value })}
-            placeholder="brian@draftbit.com"
+            placeholder="brian@draftbitlabs.tech"
           />
           <Select
             label="Role"

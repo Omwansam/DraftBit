@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Building2, Globe, RotateCcw, Save, Search, Share2, Sliders } from 'lucide-react'
+import { siteHost } from '../lib/format'
 import PageHeader from '../components/ui/PageHeader'
 import Button from '../components/ui/Button'
 import Card, { CardBody, CardHeader } from '../components/ui/Card'
@@ -294,7 +295,7 @@ export default function Settings() {
               <p className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-widest text-subtle-foreground">
                 Search result preview
               </p>
-              <p className="truncate text-[0.8125rem] text-success">draftbit.com</p>
+              <p className="truncate text-[0.8125rem] text-success">{siteHost}</p>
               <p className="mt-0.5 truncate text-base text-primary">{form.seo.defaultTitle}</p>
               <p className="mt-0.5 line-clamp-2 text-[0.8125rem] text-muted-foreground">
                 {form.seo.defaultDescription}

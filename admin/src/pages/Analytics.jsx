@@ -10,7 +10,7 @@ import ColumnChart from '../components/charts/ColumnChart'
 import BarChart from '../components/charts/BarChart'
 import { seriesColor } from '../components/charts/chartTheme'
 import { useData } from '../context/DataContext'
-import { formatDate, formatNumber } from '../lib/format'
+import { formatDate, formatNumber, siteHost } from '../lib/format'
 
 const RANGES = [
   { id: 7, label: '7 days' },
@@ -84,7 +84,7 @@ export default function Analytics() {
       <PageHeader
         eyebrow="Overview"
         title="Analytics"
-        description="How people find draftbit.com, what they read, and how often they get in touch."
+        description={`How people find ${siteHost}, what they read, and how often they get in touch.`}
       />
 
       {/* One filter row scoping every chart below it. */}

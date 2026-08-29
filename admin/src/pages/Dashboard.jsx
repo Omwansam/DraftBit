@@ -18,7 +18,7 @@ import StackedShareBar from '../components/charts/StackedShareBar'
 import { seriesColor } from '../components/charts/chartTheme'
 import { useData } from '../context/DataContext'
 import { useAuth } from '../context/AuthContext'
-import { formatDate, formatNumber, formatRelative, initials, truncate } from '../lib/format'
+import { formatDate, formatNumber, formatRelative, initials, siteHost, truncate } from '../lib/format'
 
 const RANGES = [
   { id: 7, label: '7 days' },
@@ -103,7 +103,7 @@ export default function Dashboard() {
       <PageHeader
         eyebrow="Overview"
         title={`${greeting()}, ${(user?.name ?? '').split(' ')[0] || 'there'}`}
-        description="Traffic, enquiries and the state of everything published on draftbit.com."
+        description={`Traffic, enquiries and the state of everything published on ${siteHost}.`}
         actions={
           <>
             <Button variant="outline" to="/insights/new">
