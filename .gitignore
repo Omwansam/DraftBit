@@ -10,3 +10,10 @@ dist/
 npm-debug.log*
 yarn-error.log*
 .DS_Store
+
+# Vite's local dependency cache. Regenerated on every dev-server start and
+# machine-specific, so committing it only produces conflicts — a stale
+# _metadata.json can also make Vite serve pre-bundled deps that no longer match
+# package.json.
+.vite/
+*/.vite/
