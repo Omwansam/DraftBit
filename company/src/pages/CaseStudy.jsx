@@ -42,26 +42,35 @@ const CaseStudy = () => {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
           <div className="lg:col-span-2 space-y-12">
+            {/* A heading with nothing under it reads as a broken page rather than
+                as a short one, so each section renders only when it has content.
+                Not every project has a written challenge or a list of results. */}
             {[
               { label: 'The Challenge', text: project.challenge },
               { label: 'Our Solution', text: project.solution },
-            ].map((section) => (
-              <section key={section.label}>
-                <h2 className="section-label mb-4">{section.label}</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">{section.text}</p>
+            ]
+              .filter((section) => section.text?.trim())
+              .map((section) => (
+                <section key={section.label}>
+                  <h2 className="section-label mb-4">{section.label}</h2>
+                  <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {section.text}
+                  </p>
+                </section>
+              ))}
+            {project.results?.length > 0 && (
+              <section>
+                <h2 className="section-label mb-6">Results</h2>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {project.results.map((result) => (
+                    <li key={result} className="flex items-start gap-3 p-4 rounded-xl border border-white/8 bg-white/[0.02]">
+                      <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-foreground">{result}</span>
+                    </li>
+                  ))}
+                </ul>
               </section>
-            ))}
-            <section>
-              <h2 className="section-label mb-6">Results</h2>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {project.results.map((result) => (
-                  <li key={result} className="flex items-start gap-3 p-4 rounded-xl border border-white/8 bg-white/[0.02]">
-                    <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-foreground">{result}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            )}
           </div>
 
           <aside>

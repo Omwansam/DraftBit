@@ -191,6 +191,58 @@ const projects = [
         order: 1,
     },
     {
+        slug: 'lumen-wifi-billing',
+        title: 'Lumen WiFi Billing',
+        description:
+            'Billing and network management for local ISPs — MikroTik routers driven over the API, M-Pesa and voucher payments, and one dashboard for revenue and who is online.',
+        tags: ['MikroTik API', 'M-Pesa', 'PPPoE', 'Hotspot'],
+        icon: 'Workflow',
+        category: 'Web',
+        status: 'published',
+        featured: true,
+        client: 'Lumen',
+        role: 'Lead Engineer',
+        year: '2026',
+        liveUrl: 'https://lumen.ruirufactorymabati.com',
+        image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=1200&auto=format&fit=crop',
+        imageAlt: 'Network equipment in a rack, representing the router fleet Lumen manages',
+        challenge:
+            'A small ISP runs on two things it cannot afford to get wrong: the router that decides who gets bandwidth, and the payment that decides who should. Kept apart, they are reconciled by hand — someone reads an M-Pesa message, then edits a MikroTik user, and a paying customer waits offline in between. That work does not scale past a few hundred subscribers, and every manual step is a chance to cut off someone who has paid.',
+        solution:
+            'Lumen closes the loop between the two. Routers are driven over the MikroTik API, so users and bandwidth limits are set from the platform rather than by hand on each device. Payments arrive through M-Pesa or a voucher and grant access immediately, without anyone in the middle. Operators build their own PPPoE or hotspot packages instead of choosing from fixed tiers, and a single dashboard shows revenue alongside who is actually online right now. New operators can sign up and reach their first paying customer on a 14-day trial without providing card details.',
+        results: [
+            'MikroTik routers synced over the API rather than configured by hand',
+            'M-Pesa and voucher payments grant access instantly',
+            'Custom PPPoE and hotspot plans, not fixed tiers',
+            'Revenue and live client count on one dashboard',
+            '14-day trial with no card required',
+        ],
+        order: 2,
+    },
+    {
+        slug: 'vision-mentors',
+        title: 'Vision Mentors Group',
+        description:
+            'A site for a Kenyan non-profit working across education, health and community resilience, presenting its programmes and the evidence behind them.',
+        tags: [],
+        icon: 'Users',
+        category: 'Web',
+        status: 'published',
+        featured: true,
+        client: 'Vision Mentors Group',
+        role: 'Lead Engineer',
+        year: '2026',
+        liveUrl: 'https://visionmentors.org',
+        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop',
+        imageAlt: 'A classroom, representing the learning outcomes Vision Mentors works to improve',
+        challenge:
+            'Vision Mentors partners with communities in Kenya across three programme areas that are easy to state and hard to show: learning outcomes, health and well-being, and long-term resilience. The organisation works from evidence, and a site for it has to carry that — funders and partners arrive wanting to understand what is actually being done, not a page of intentions.',
+        solution:
+            'A site organised around the three programme areas rather than around the organisation chart, so a visitor lands on the work itself: education and learning outcomes, community health initiatives, and the evidence-based strategies behind building resilience. Partners and prospective funders can reach the team directly from any point in the site.',
+        results: [],
+        order: 3,
+    },
+    {
         slug: 'e-commerce-platform',
         title: 'E-Commerce Platform',
         description:
@@ -199,7 +251,7 @@ const projects = [
         icon: 'Globe',
         category: 'Web',
         status: 'published',
-        featured: true,
+        featured: false,
         client: 'East Africa Retail Group',
         year: '2024',
         image: 'https://images.unsplash.com/photo-1557821552-17105176677c?q=80&w=1200&auto=format&fit=crop',
@@ -213,7 +265,7 @@ const projects = [
             'Sub-2s page load on mobile',
             '99.9% uptime since launch',
         ],
-        order: 2,
+        order: 4,
     },
     {
         slug: 'fitness-mobile-app',
@@ -223,7 +275,7 @@ const projects = [
         icon: 'Smartphone',
         category: 'Mobile',
         status: 'published',
-        featured: true,
+        featured: false,
         client: 'HealthTech Startup',
         year: '2024',
         image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&auto=format&fit=crop',
@@ -237,7 +289,7 @@ const projects = [
             '40% subscription conversion rate',
             'Single codebase for both platforms',
         ],
-        order: 3,
+        order: 5,
     },
     {
         slug: 'analytics-dashboard',
@@ -261,7 +313,7 @@ const projects = [
             'Automated daily email reports',
             'Zero spreadsheet dependency',
         ],
-        order: 4,
+        order: 6,
     },
     {
         slug: 'brand-design-system',
@@ -285,7 +337,7 @@ const projects = [
             'Unified brand across web & marketing',
             'Developer-friendly documentation',
         ],
-        order: 5,
+        order: 7,
     },
     {
         slug: 'booking-scheduling',
@@ -309,7 +361,7 @@ const projects = [
             'Integrated payment collection',
             'Calendar sync for all staff',
         ],
-        order: 6,
+        order: 8,
     },
     {
         slug: 'internal-tooling',
@@ -333,7 +385,7 @@ const projects = [
             'Single source of truth for inventory',
             'Custom reports on demand',
         ],
-        order: 7,
+        order: 9,
     },
 ];
 
