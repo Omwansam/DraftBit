@@ -6,11 +6,11 @@ import { useSiteData } from '../../context/SiteDataContext'
    name or description edited in the admin console reaches the tab title and
    the share cards without a rebuild. */
 const routeMeta = {
-  '/about': { title: 'About | DraftBit', description: 'Meet the team behind DraftBit. Our mission, values, and journey.' },
+  '/about': { title: 'About | DraftBit', description: 'Meet the founder behind DraftBit. Our mission, values, and journey.' },
   '/services': { title: 'Services | DraftBit', description: 'Custom software, websites, ERP, CRM, POS, and automation.' },
   '/projects': { title: 'Projects | DraftBit', description: 'Selected work delivered for clients worldwide.' },
   '/contact': { title: 'Contact | DraftBit', description: 'Have a project in mind? Talk to us.' },
-  '/careers': { title: 'Careers | DraftBit', description: 'Join our team building the future from Nairobi.' },
+  '/careers': { title: 'Careers | DraftBit', description: 'No open roles right now. Introduce yourself anyway.' },
   '/insights': { title: 'Insights | DraftBit', description: 'Thoughts from the studio on tech and product.' },
   '/privacy': { title: 'Privacy Policy | DraftBit', description: 'How DraftBit handles your data.' },
   '/terms': { title: 'Terms of Service | DraftBit', description: 'Terms for using the DraftBit website.' },

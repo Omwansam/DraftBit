@@ -274,7 +274,7 @@ export const insights = [
     body:
       'The narrative that African engineering is "catching up" is a decade out of date. The teams we work alongside in Nairobi, Lagos and Kigali are shipping products with the same architectural rigour, the same test discipline and the same deployment automation as anyone in Berlin or Austin.\n\nWhat is different is the constraint set. Bandwidth is expensive and uneven, so payload budgets are real. Payment rails are fragmented, so abstraction over providers is not optional. Devices skew mid-range Android, so a 2MB JavaScript bundle is a business problem, not a lighthouse score.\n\nThose constraints produce better engineers. A team that has optimised for a 3G connection on a four-year-old handset does not suddenly forget how when the client is in London.',
     category: 'Industry',
-    author: 'Alex Kimani',
+    author: 'Omwansa Arnold Mwebi',
     status: 'published',
     featured: true,
     readTime: '6 min read',
@@ -293,7 +293,7 @@ export const insights = [
     body:
       'Every startup we meet has been told to "move fast." Almost none have been told what specifically to be sloppy about. That distinction is the whole game.\n\nBe sloppy about: styling systems, admin tooling, internal naming, the shape of your analytics events. These are cheap to change later.\n\nDo not be sloppy about: your data model, your auth boundary, and the direction your dependencies point. Those three calcify. A badly-shaped users table is still there three years and four rewrites later, because everything reads from it.\n\nClean architecture, in practice, is just this: keep business rules in the middle, keep frameworks at the edges, and let dependencies point inward.',
     category: 'Engineering',
-    author: 'Alex Kimani',
+    author: 'Omwansa Arnold Mwebi',
     status: 'published',
     featured: true,
     readTime: '8 min read',
@@ -312,7 +312,7 @@ export const insights = [
     body:
       'Most small businesses do not need a model. They need a queue.\n\nBefore anyone reaches for an LLM, the highest-return automation is almost always structural: a form that writes to a database instead of an inbox, a scheduled job that reconciles two systems overnight, a webhook that stops someone re-typing an order.\n\nOnce that plumbing exists, AI has somewhere to plug in — summarising the queue, drafting the reply, classifying the ticket. Applied to a manual process, it just makes the mess faster.',
     category: 'Product',
-    author: 'Sarah Mwangi',
+    author: 'Omwansa Arnold Mwebi',
     status: 'published',
     featured: false,
     readTime: '5 min read',
@@ -331,7 +331,7 @@ export const insights = [
     body:
       'The failure mode is always the same: design ships a beautiful kit, engineering builds 80% of it, and then the first deadline arrives and someone writes a one-off button. Six months later there are nine buttons.\n\nWhat actually works is boring. Tokens before components. One owner with merge rights. A visible cost to going off-system — a lint rule, not a Slack message.',
     category: 'Design',
-    author: 'Sarah Mwangi',
+    author: 'Omwansa Arnold Mwebi',
     status: 'draft',
     featured: false,
     readTime: '7 min read',
@@ -355,7 +355,7 @@ export const careers = [
     department: 'Engineering',
     location: 'Nairobi / Remote',
     type: 'Full-time',
-    status: 'open',
+    status: 'closed',
     description:
       'Build scalable web and mobile products for clients across Africa and beyond. You’ll own features end-to-end—from API design to polished UI.',
     requirements: [
@@ -375,7 +375,7 @@ export const careers = [
     department: 'Design',
     location: 'Nairobi / Hybrid',
     type: 'Full-time',
-    status: 'open',
+    status: 'closed',
     description:
       'Shape intuitive, beautiful interfaces for web and mobile products. You’ll work closely with engineers and clients from discovery to delivery.',
     requirements: [
@@ -395,7 +395,7 @@ export const careers = [
     department: 'Engineering',
     location: 'Remote',
     type: 'Full-time',
-    status: 'open',
+    status: 'closed',
     description:
       'Design and maintain cloud infrastructure for client projects. CI/CD pipelines, monitoring, and security are your domain.',
     requirements: [
@@ -436,51 +436,15 @@ export const careers = [
 export const team = [
   {
     id: 'tm-1',
-    name: 'Alex Kimani',
-    role: 'Founder & Lead Engineer',
-    focus: 'Architecture, backend, and delivery.',
-    email: 'alex@draftbit.com',
-    linkedin: 'https://linkedin.com/in/alexkimani',
-    github: 'https://github.com/alexkimani',
+    name: 'Omwansa Arnold Mwebi',
+    role: 'Founder & Sole Owner — Full-Stack Engineer',
+    focus: 'Architecture, backend, frontend, design, infrastructure, and delivery. Every project runs through one pair of hands.',
+    email: 'hello@draftbit.com',
+    linkedin: 'https://linkedin.com',
+    github: 'https://github.com',
     status: 'active',
     order: 1,
     joinedAt: iso(2190),
-  },
-  {
-    id: 'tm-2',
-    name: 'Sarah Mwangi',
-    role: 'Product & Design Lead',
-    focus: 'UX, UI, and design systems.',
-    email: 'sarah@draftbit.com',
-    linkedin: 'https://linkedin.com/in/sarahmwangi',
-    github: '',
-    status: 'active',
-    order: 2,
-    joinedAt: iso(1460),
-  },
-  {
-    id: 'tm-3',
-    name: 'James Ochieng',
-    role: 'Senior Full-Stack Developer',
-    focus: 'Web and mobile applications.',
-    email: 'james@draftbit.com',
-    linkedin: 'https://linkedin.com/in/jamesochieng',
-    github: 'https://github.com/jochieng',
-    status: 'active',
-    order: 3,
-    joinedAt: iso(910),
-  },
-  {
-    id: 'tm-4',
-    name: 'Grace Wanjiku',
-    role: 'DevOps & Cloud Engineer',
-    focus: 'Infrastructure and deployment.',
-    email: 'grace@draftbit.com',
-    linkedin: 'https://linkedin.com/in/gracewanjiku',
-    github: 'https://github.com/gwanjiku',
-    status: 'active',
-    order: 4,
-    joinedAt: iso(620),
   },
 ]
 
@@ -622,53 +586,13 @@ export const clients = [
 export const users = [
   {
     id: 'usr-1',
-    username: 'alex',
-    name: 'Alex Kimani',
-    email: 'alex@draftbit.com',
+    username: 'omwansa',
+    name: 'Omwansa Arnold Mwebi',
+    email: 'hello@draftbit.com',
     role: 'Owner',
     status: 'active',
     lastActive: hoursAgo(1, 12),
     createdAt: iso(2190),
-  },
-  {
-    id: 'usr-2',
-    username: 'sarah',
-    name: 'Sarah Mwangi',
-    email: 'sarah@draftbit.com',
-    role: 'Admin',
-    status: 'active',
-    lastActive: hoursAgo(3, 40),
-    createdAt: iso(1460),
-  },
-  {
-    id: 'usr-3',
-    username: 'james',
-    name: 'James Ochieng',
-    email: 'james@draftbit.com',
-    role: 'Editor',
-    status: 'active',
-    lastActive: iso(1, 5, 5),
-    createdAt: iso(910),
-  },
-  {
-    id: 'usr-4',
-    username: 'grace',
-    name: 'Grace Wanjiku',
-    email: 'grace@draftbit.com',
-    role: 'Editor',
-    status: 'active',
-    lastActive: iso(3, 2, 30),
-    createdAt: iso(620),
-  },
-  {
-    id: 'usr-5',
-    username: 'intern',
-    name: 'Brian Otieno',
-    email: 'brian@draftbit.com',
-    role: 'Viewer',
-    status: 'invited',
-    lastActive: null,
-    createdAt: iso(5),
   },
 ]
 
@@ -905,12 +829,12 @@ export const topPages = [
 ]
 
 export const activity = [
-  { id: 'act-1', actor: 'Sarah Mwangi', action: 'published the insight', target: 'Building for Africa, Competing Globally', at: hoursAgo(2, 5), type: 'publish' },
-  { id: 'act-2', actor: 'Alex Kimani', action: 'replied to', target: 'Lucy Njeri — School management portal', at: hoursAgo(5, 30), type: 'message' },
-  { id: 'act-3', actor: 'James Ochieng', action: 'updated the project', target: 'FIBI', at: iso(1, 3, 12), type: 'edit' },
-  { id: 'act-4', actor: 'Grace Wanjiku', action: 'opened the role', target: 'DevOps Engineer', at: iso(1, 7, 0), type: 'create' },
-  { id: 'act-5', actor: 'Alex Kimani', action: 'invited', target: 'brian@draftbit.com', at: iso(5, 6, 45), type: 'user' },
-  { id: 'act-6', actor: 'Sarah Mwangi', action: 'archived the message from', target: 'Victor Kiplagat', at: iso(7, 4, 20), type: 'archive' },
+  { id: 'act-1', actor: 'Omwansa Arnold Mwebi', action: 'published the insight', target: 'Building for Africa, Competing Globally', at: hoursAgo(2, 5), type: 'publish' },
+  { id: 'act-2', actor: 'Omwansa Arnold Mwebi', action: 'replied to', target: 'Lucy Njeri — School management portal', at: hoursAgo(5, 30), type: 'message' },
+  { id: 'act-3', actor: 'Omwansa Arnold Mwebi', action: 'updated the project', target: 'FIBI', at: iso(1, 3, 12), type: 'edit' },
+  { id: 'act-4', actor: 'Omwansa Arnold Mwebi', action: 'closed the role', target: 'DevOps Engineer', at: iso(1, 7, 0), type: 'edit' },
+  { id: 'act-5', actor: 'Omwansa Arnold Mwebi', action: 'updated the team page', target: 'DraftBit', at: iso(5, 6, 45), type: 'user' },
+  { id: 'act-6', actor: 'Omwansa Arnold Mwebi', action: 'archived the message from', target: 'Victor Kiplagat', at: iso(7, 4, 20), type: 'archive' },
 ]
 
 export const seedData = {

@@ -268,7 +268,7 @@ export default function Users() {
             value={invite.name}
             error={errors.name}
             onChange={(e) => setInvite({ ...invite, name: e.target.value })}
-            placeholder="Brian Otieno"
+            placeholder="Full name"
           />
           <Input
             label="Email address"

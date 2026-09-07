@@ -260,10 +260,13 @@ export const processSteps = [
 ]
 
 export const team = [
-  { name: 'Alex Kimani', role: 'Founder & Lead Engineer', focus: 'Architecture, backend, and delivery.', avatar: 'AK', linkedin: '#' },
-  { name: 'Sarah Mwangi', role: 'Product & Design Lead', focus: 'UX, UI, and design systems.', avatar: 'SM', linkedin: '#' },
-  { name: 'James Ochieng', role: 'Senior Full-Stack Developer', focus: 'Web and mobile applications.', avatar: 'JO', linkedin: '#' },
-  { name: 'Grace Wanjiku', role: 'DevOps & Cloud Engineer', focus: 'Infrastructure and deployment.', avatar: 'GW', linkedin: '#' },
+  {
+    name: 'Omwansa Arnold Mwebi',
+    role: 'Founder & Sole Owner — Full-Stack Engineer',
+    focus: 'Architecture, backend, frontend, design, infrastructure, and delivery. Every project runs through one pair of hands.',
+    avatar: 'OA',
+    linkedin: '#',
+  },
 ]
 
 export const testimonials = [
@@ -319,35 +322,15 @@ export const blogPosts = [
 
 export const getBlogPostBySlug = (slug) => blogPosts.find((p) => p.slug === slug)
 
-export const careers = [
-  {
-    slug: 'senior-fullstack-engineer',
-    title: 'Senior Full-Stack Engineer',
-    department: 'Engineering',
-    location: 'Nairobi / Remote',
-    type: 'Full-time',
-    description: 'Build scalable web and mobile products for clients across Africa and beyond. You\'ll own features end-to-end—from API design to polished UI.',
-    requirements: ['5+ years full-stack experience', 'Strong React & Node.js skills', 'Experience with PostgreSQL or MongoDB', 'Comfortable with client communication'],
-  },
-  {
-    slug: 'product-designer',
-    title: 'Product Designer',
-    department: 'Design',
-    location: 'Nairobi / Hybrid',
-    type: 'Full-time',
-    description: 'Shape intuitive, beautiful interfaces for web and mobile products. You\'ll work closely with engineers and clients from discovery to delivery.',
-    requirements: ['3+ years product/UI design experience', 'Proficiency in Figma', 'Portfolio demonstrating web & mobile work', 'Understanding of design systems'],
-  },
-  {
-    slug: 'devops-engineer',
-    title: 'DevOps Engineer',
-    department: 'Engineering',
-    location: 'Remote',
-    type: 'Full-time',
-    description: 'Design and maintain cloud infrastructure for client projects. CI/CD pipelines, monitoring, and security are your domain.',
-    requirements: ['3+ years DevOps/SRE experience', 'AWS or GCP proficiency', 'Docker & Kubernetes knowledge', 'Infrastructure as Code (Terraform preferred)'],
-  },
-]
+/**
+ * Open roles. Empty by design: nothing is open right now.
+ *
+ * The Careers page and the "we're hiring" links read this array's length rather
+ * than hard-coding the closed state, so adding a role here (or publishing one
+ * from the admin console, which overrides this file) brings the listings and
+ * the hiring call-out back on their own.
+ */
+export const careers = []
 
 export const getCareerBySlug = (slug) => careers.find((c) => c.slug === slug)
 
@@ -394,10 +377,10 @@ export const timeline = [
 
 export const pageMeta = {
   home: { title: 'DraftBit | Africa\'s Bold Tech Studio', description: 'Expert full-stack development from Nairobi. Custom software, web apps, mobile products, and digital transformation.' },
-  about: { title: 'About | DraftBit', description: 'Meet the team behind DraftBit. Our mission, values, and journey building world-class technology from Africa.' },
+  about: { title: 'About | DraftBit', description: 'Meet the founder behind DraftBit. Our mission, values, and journey building world-class technology from Africa.' },
   services: { title: 'Services | DraftBit', description: 'Custom software, websites, ERP, CRM, POS, and automation solutions engineered for scale.' },
   projects: { title: 'Projects | DraftBit', description: 'Selected work we\'ve delivered for clients—web apps, mobile products, and design systems.' },
   contact: { title: 'Contact | DraftBit', description: 'Have a project in mind? Talk to us. Based in Nairobi, serving clients worldwide.' },
-  careers: { title: 'Careers | DraftBit', description: 'Join our team building the future from Nairobi. Open roles in engineering and design.' },
-  insights: { title: 'Insights | DraftBit', description: 'Engineering, product, and industry perspectives from the DraftBit team.' },
+  careers: { title: 'Careers | DraftBit', description: 'No open roles at DraftBit right now. Introduce yourself anyway—we keep good people on file.' },
+  insights: { title: 'Insights | DraftBit', description: 'Engineering, product, and industry perspectives from DraftBit.' },
 }

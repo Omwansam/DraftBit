@@ -186,7 +186,7 @@ export default function Team() {
             value={form.name}
             error={errors.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="Alex Kimani"
+            placeholder="Full name"
           />
           <Input
             label="Role"

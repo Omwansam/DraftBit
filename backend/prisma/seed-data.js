@@ -70,16 +70,14 @@ const settings = {
 /* -------------------------------------------------------------------------- */
 
 /**
- * The four founders and staff, plus one outstanding invitation so the invite
- * hand-off is exercisable without creating an account by hand.
+ * Extra console accounts beyond the owner.
+ *
+ * Empty: DraftBit is a one-person studio, and the sole Owner account is created
+ * by seed.js from SEED_OWNER_EMAIL / SEED_OWNER_NAME rather than listed here.
+ * Adding a record to this array seeds another staff login, so leave it empty
+ * until there is a second person who genuinely needs one.
  */
-const users = [
-    { username: 'alex', name: 'Alex Kimani', email: 'alex@draftbit.com', role: 'Owner', status: 'active' },
-    { username: 'sarah', name: 'Sarah Mwangi', email: 'sarah@draftbit.com', role: 'Admin', status: 'active' },
-    { username: 'james', name: 'James Ochieng', email: 'james@draftbit.com', role: 'Editor', status: 'active' },
-    { username: 'grace', name: 'Grace Wanjiku', email: 'grace@draftbit.com', role: 'Editor', status: 'active' },
-    { username: 'brian', name: 'Brian Otieno', email: 'brian@draftbit.com', role: 'Viewer', status: 'invited' },
-];
+const users = [];
 
 /* -------------------------------------------------------------------------- */
 /* Team (the public "who we are" grid)                                        */
@@ -87,42 +85,14 @@ const users = [
 
 const team = [
     {
-        name: 'Alex Kimani',
-        role: 'Founder & Lead Engineer',
-        focus: 'Architecture, backend, and delivery.',
-        email: 'alex@draftbit.com',
+        name: 'Omwansa Arnold Mwebi',
+        role: 'Founder & Sole Owner — Full-Stack Engineer',
+        focus: 'Architecture, backend, frontend, design, infrastructure, and delivery. Every project runs through one pair of hands.',
+        email: 'hello@draftbit.com',
         linkedin: 'https://linkedin.com',
         github: 'https://github.com',
         status: 'active',
         order: 0,
-    },
-    {
-        name: 'Sarah Mwangi',
-        role: 'Product & Design Lead',
-        focus: 'UX, UI, and design systems.',
-        email: 'sarah@draftbit.com',
-        linkedin: 'https://linkedin.com',
-        status: 'active',
-        order: 1,
-    },
-    {
-        name: 'James Ochieng',
-        role: 'Senior Full-Stack Developer',
-        focus: 'Web and mobile applications.',
-        email: 'james@draftbit.com',
-        linkedin: 'https://linkedin.com',
-        github: 'https://github.com',
-        status: 'active',
-        order: 2,
-    },
-    {
-        name: 'Grace Wanjiku',
-        role: 'DevOps & Cloud Engineer',
-        focus: 'Infrastructure and deployment.',
-        email: 'grace@draftbit.com',
-        linkedin: 'https://linkedin.com',
-        status: 'active',
-        order: 3,
     },
 ];
 
@@ -405,7 +375,7 @@ const insights = [
         excerpt:
             'How Nairobi-born tech teams are shipping world-class products that scale across continents.',
         category: 'Industry',
-        author: 'Alex Kimani',
+        author: 'Omwansa Arnold Mwebi',
         readTime: '6 min read',
         status: 'published',
         featured: true,
@@ -439,7 +409,7 @@ const insights = [
         excerpt:
             'The technical decisions you make early will either accelerate or cripple your growth. Here is what we recommend.',
         category: 'Engineering',
-        author: 'James Ochieng',
+        author: 'Omwansa Arnold Mwebi',
         readTime: '8 min read',
         status: 'published',
         featured: false,
@@ -475,7 +445,7 @@ const insights = [
         excerpt:
             'Practical ways SMEs can leverage AI and automation without enterprise budgets or complexity.',
         category: 'Product',
-        author: 'Sarah Mwangi',
+        author: 'Omwansa Arnold Mwebi',
         readTime: '5 min read',
         status: 'published',
         featured: false,
@@ -516,7 +486,7 @@ const careers = [
         department: 'Engineering',
         location: 'Nairobi / Remote',
         type: 'Full-time',
-        status: 'open',
+        status: 'closed',
         description:
             'Build scalable web and mobile products for clients across Africa and beyond. You will own features end-to-end—from API design to polished UI.',
         requirements: [
@@ -533,7 +503,7 @@ const careers = [
         department: 'Design',
         location: 'Nairobi / Hybrid',
         type: 'Full-time',
-        status: 'open',
+        status: 'closed',
         description:
             'Shape intuitive, beautiful interfaces for web and mobile products. You will work closely with engineers and clients from discovery to delivery.',
         requirements: [
@@ -550,7 +520,7 @@ const careers = [
         department: 'Engineering',
         location: 'Remote',
         type: 'Full-time',
-        status: 'open',
+        status: 'closed',
         description:
             'Design and maintain cloud infrastructure for client projects. CI/CD pipelines, monitoring, and security are your domain.',
         requirements: [

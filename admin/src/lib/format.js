@@ -71,7 +71,7 @@ export function formatRelative(value) {
   return formatDate(date)
 }
 
-/** Initials for avatar chips: "Alex Kimani" -> "AK". */
+/** Initials for avatar chips: "Omwansa Arnold" -> "OA". */
 export function initials(name = '') {
   return name
     .split(/\s+/)

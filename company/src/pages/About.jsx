@@ -21,7 +21,11 @@ const timeline = [
 ]
 
 const About = () => {
-  const { siteConfig, mission, vision, stats, team, testimonials } = useSiteData()
+  const { siteConfig, mission, vision, stats, team, testimonials, careers } = useSiteData()
+
+  // A lone card in a four-column grid reads as a failed load, not as one person.
+  const solo = team.length === 1
+  const hiring = careers.length > 0
 
   return (
   <div className="min-h-screen bg-background">
@@ -82,21 +86,28 @@ const About = () => {
 
     <section className="py-16 md:py-24 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="section-label mb-10">The Team</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <h2 className="section-label mb-10">{solo ? 'The Founder' : 'The Team'}</h2>
+        <div className={`grid gap-6 ${solo ? 'grid-cols-1 max-w-xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
           {team.map((member) => (
-            <div key={member.name} className="p-6 rounded-2xl border border-white/8 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center text-lg font-bold mx-auto mb-4">
+            <div key={member.name} className={`rounded-2xl border border-white/8 text-center ${solo ? 'p-8' : 'p-6'}`}>
+              <div className={`rounded-2xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center font-bold mx-auto mb-4 ${solo ? 'w-20 h-20 text-2xl' : 'w-16 h-16 text-lg'}`}>
                 {member.avatar}
               </div>
-              <h3 className="font-display font-bold text-foreground">{member.name}</h3>
+              <h3 className={`font-display font-bold text-foreground ${solo ? 'text-xl' : ''}`}>{member.name}</h3>
               <p className="text-sm text-primary mt-1 mb-2">{member.role}</p>
               <p className="text-xs text-muted-foreground">{member.focus}</p>
             </div>
           ))}
         </div>
-        <p className="text-center mt-10">
-          <Link to="/careers" className="text-primary font-semibold hover:underline">We&apos;re hiring →</Link>
+        <p className="text-center mt-10 text-sm text-muted-foreground">
+          {hiring ? (
+            <Link to="/careers" className="text-primary font-semibold hover:underline">We&apos;re hiring →</Link>
+          ) : (
+            <>
+              No open roles right now.{' '}
+              <Link to="/careers" className="text-primary hover:underline">Introduce yourself anyway →</Link>
+            </>
+          )}
         </p>
       </div>
     </section>

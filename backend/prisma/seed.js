@@ -38,7 +38,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.SEED_OWNER_PASSWORD) {
     );
     process.exit(1);
 }
-const OWNER_NAME = process.env.SEED_OWNER_NAME || 'DraftBit Owner';
+const OWNER_NAME = process.env.SEED_OWNER_NAME || 'Omwansa Arnold Mwebi';
 /** Staff accounts all share this so every role is testable straight away. */
 const STAFF_PASSWORD = process.env.SEED_STAFF_PASSWORD || OWNER_PASSWORD;
 
@@ -185,19 +185,25 @@ async function seedAnalytics() {
     console.log(`  traffic       ${rows.length} days, ${data.trafficSources.length} sources, ${data.pageStats.length} pages`);
 }
 
-/** A plausible recent history, attributed to the seeded staff. */
-async function seedActivity(staff) {
-    const byName = (name) => staff.find((person) => person.name === name);
+/**
+ * A plausible recent history.
+ *
+ * Everything is attributed to the owner: this is a one-person studio, so any
+ * other name in the log would be fiction. `staff` is still consulted first so
+ * the attribution follows the real record if a second account ever exists.
+ */
+async function seedActivity(owner, staff = []) {
+    const byName = (name) => (name === owner.name ? owner : staff.find((person) => person.name === name));
 
     const entries = [
-        { actor: 'Alex Kimani', action: 'published the project', target: 'FIBI', type: 'publish', hours: 5 },
-        { actor: 'Sarah Mwangi', action: 'replied to', target: 'Lucy Njeri — School management portal', type: 'message', hours: 29 },
-        { actor: 'James Ochieng', action: 'updated the project', target: 'ShoeLocker', type: 'edit', hours: 34 },
-        { actor: 'Sarah Mwangi', action: 'published the insight', target: 'Building for Africa, Competing Globally', type: 'publish', hours: 52 },
-        { actor: 'Grace Wanjiku', action: 'opened the role', target: 'DevOps Engineer', type: 'create', hours: 79 },
-        { actor: 'Alex Kimani', action: 'invited', target: 'brian@draftbit.com', type: 'user', hours: 126 },
-        { actor: 'Sarah Mwangi', action: 'archived the enquiry from', target: 'Victor Kiplagat', type: 'archive', hours: 172 },
-        { actor: 'James Ochieng', action: 'updated site settings', target: 'contact details', type: 'edit', hours: 200 },
+        { actor: owner.name, action: 'published the project', target: 'FIBI', type: 'publish', hours: 5 },
+        { actor: owner.name, action: 'replied to', target: 'Lucy Njeri — School management portal', type: 'message', hours: 29 },
+        { actor: owner.name, action: 'updated the project', target: 'ShoeLocker', type: 'edit', hours: 34 },
+        { actor: owner.name, action: 'published the insight', target: 'Building for Africa, Competing Globally', type: 'publish', hours: 52 },
+        { actor: owner.name, action: 'closed the role', target: 'DevOps Engineer', type: 'edit', hours: 79 },
+        { actor: owner.name, action: 'updated the team page', target: 'DraftBit', type: 'edit', hours: 126 },
+        { actor: owner.name, action: 'archived the enquiry from', target: 'Victor Kiplagat', type: 'archive', hours: 172 },
+        { actor: owner.name, action: 'updated site settings', target: 'contact details', type: 'edit', hours: 200 },
     ];
 
     await prisma.activityLog.deleteMany();
@@ -266,7 +272,7 @@ async function main() {
 
     await seedMessages();
     await seedAnalytics();
-    await seedActivity(staff);
+    await seedActivity(owner, staff);
 
     const invited = staff.filter((person) => person.inviteToken);
 

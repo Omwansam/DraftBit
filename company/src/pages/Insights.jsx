@@ -12,7 +12,7 @@ const Insights = () => {
     <PageHero
       label="Insights"
       title="Thoughts from the studio."
-      description="Engineering, product, and industry perspectives from the DraftBit team."
+      description="Engineering, product, and industry perspectives from DraftBit."
     />
 
     <section className="py-16 md:py-24">
